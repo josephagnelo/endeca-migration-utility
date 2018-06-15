@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % dimensions.dtd SYSTEM "dimensions.dtd">
+%dimensions.dtd;
+<!ELEMENT TRANSFORMS (DIMENSION_TRANSFORMS)>
+<!ATTLIST TRANSFORMS
+	VERSION CDATA #IMPLIED
+>
+<!ELEMENT DIMENSION_TRANSFORMS (TRAN_DIMENSIONS?, TRAN_DVALS?, BASE_CHANGES?)>
+<!ELEMENT TRAN_DIMENSIONS (TRAN_DIMENSION*)>
+<!ELEMENT TRAN_DIMENSION (DIMENSION_ID, DVAL)>
+<!ATTLIST TRAN_DIMENSION
+    NAME CDATA #REQUIRED
+    AUTO_GEN_STATE CDATA #IMPLIED
+>
+<!ELEMENT TRAN_DVALS (TRAN_DIMENSION_NODE*)>
+<!ELEMENT TRAN_DIMENSION_NODE (DVAL_ID, TRAN_DVAL_EDGE*)>
+<!ELEMENT TRAN_DVAL_EDGE (DVAL_ID?)>
+<!ATTLIST TRAN_DVAL_EDGE
+    INSTRUCT CDATA #REQUIRED
+>
+<!ELEMENT BASE_CHANGES (DVAL*)>

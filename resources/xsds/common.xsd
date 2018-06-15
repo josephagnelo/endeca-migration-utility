@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright Endeca 2008. All Rights Reserved.
+  
+  No entity shall modify, change, or add to the contents of this file without the
+  express prior written consent of Endeca, otherwise all warranties are void.
+  
+-->
+<!--
+  ============================================================
+   Declare some entities that may be useful for users.
+   Values may be substituted using the variable substitution feature
+        on the command line or in a configuration file.
+   Duplicate entity names are allowed, but ignored duplicates will
+        be silently ignored.
+   The precedence for values is as follows (high to low):
+        1) The entities described in the XML spec (amp, gt, lt, quot, apos)
+        2) Command line overrides
+        3) Configuration file overrides
+        4) The "current_date" and "current_time" defaults (defined below)
+        5) The FIRST entity with a given name declared in the XML file
+        6) Values for the entities defined below (except "current_date"
+           and "current_time" which cannot be overridden by entities defined
+           in the XML file)
+  ============================================================
+-->
+<!--
+   if not overridden, current_date will default to today
+  in "mm/dd/yyyy" (the value below is an example and
+  cannot be used to change the format)
+-->
+<!--
+   if not overridden, current_time will default to the time
+  the pipeline is started in "HH:MM::SS" format (the value
+  below is an example and cannot be used to change the
+  format)
+-->
+<!--
+  if not overridden, end_of_line will default to the correct
+  (escaped) representation of the end of a line on the current
+  platform.
+-->
+<!--
+  ============================================================
+      Declare a shortcut for the enumeration of possible
+      COMPRESSION_LEVEL values
+  ============================================================
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:attributeGroup name="compression">
+    <xs:attribute name="COMPRESSION_LEVEL">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="-1"/>
+          <xs:enumeration value="0"/>
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="2"/>
+          <xs:enumeration value="3"/>
+          <xs:enumeration value="4"/>
+          <xs:enumeration value="5"/>
+          <xs:enumeration value="6"/>
+          <xs:enumeration value="7"/>
+          <xs:enumeration value="8"/>
+          <xs:enumeration value="9"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <!--
+    ============================================================
+        A DVAL_ID is the identity of a Dimension Value.
+        It should be unique throughout the system.
+        A DVAL_ID may, optionally, provide a DIMENSION_ID as
+        a hint to speed processing.
+    ============================================================
+  -->
+  <xs:element name="DVAL_ID">
+    <xs:complexType>
+      <xs:attribute name="DIMENSION_ID"/>
+      <xs:attribute name="ID" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    ============================================================
+    A DVAL_PATH is an alternate way of specifying a Dimension Value.
+    It specifies the "name" of all the DVals in a path starting with
+    the root of the dimension and including the "name" of the target
+    DVal itself. For this discussion, "name" means "synonym with
+    DISPLAYABLE=TRUE".  Optionally, the name of the dimension
+    containing the path may be provided as a hint to speed
+    processing.
+    ============================================================
+  -->
+  <xs:element name="DVAL_PATH">
+    <xs:complexType>
+      <xs:attribute name="DIMENSION_NAME"/>
+      <xs:attribute name="PATH" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DIMENSION_ID">
+    <xs:complexType>
+      <xs:attribute name="ID" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RECORD_ID">
+    <xs:complexType>
+      <xs:attribute name="ID" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PROPNAME" type="xs:string"/>
+  <xs:element name="DIMNAME" type="xs:string"/>
+  <xs:element name="PROP">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PVAL"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="PROP"/>
+      </xs:sequence>
+      <xs:attribute name="NAME" use="required"/>
+      <xs:attribute name="UPDATE">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="A"/>
+            <xs:enumeration value="C"/>
+            <xs:enumeration value="D"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PVAL" type="xs:string"/>
+  <!--
+    ============================================================
+    The COMMENT element provides a way for comments to be placed on
+    other elements, and be preserved when the file is re-written. (XML
+    comments get lost when the file is re-written)
+    ============================================================
+  -->
+  <xs:element name="COMMENT" type="xs:string"/>
+  <!--
+    ============================================================
+    A LOG is a place where INFO can be collected.
+    FILE has been deprecated for "URL" (which will be required)
+    ============================================================
+  -->
+  <xs:element name="LOG">
+    <xs:complexType>
+      <xs:attribute name="NAME" use="required"/>
+      <xs:attribute name="TYPE" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="SIMPLE"/>
+            <xs:enumeration value="UNIQUE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="URL"/>
+      <xs:attribute name="FILE"/>
+      <xs:attributeGroup ref="compression"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    ============================================================
+    CONFIG provides generic parameterized configuration information
+    ============================================================
+  -->
+  <xs:element name="CONFIG">
+    <xs:complexType>
+      <xs:attribute name="NAME" use="required"/>
+      <xs:attribute name="VALUE" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The RECORD_INDEX specifies the property and dimension keys on
+    which the records are sorted.
+  -->
+  <xs:element name="RECORD_INDEX">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="KEY_DIMENSION"/>
+      </xs:sequence>
+      <xs:attribute name="UNIQUE">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="TRUE"/>
+            <xs:enumeration value="FALSE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The RECORD_GROUP provides the property and dimension keys on
+    for record grouping. In Forge, output adapters group records
+    to compress information. In addition, dgidx uses the information
+    provided by this element to create multi-records.
+  -->
+  <xs:element name="RECORD_GROUP">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="KEY_DIMENSION"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The ID attribute of the KEY_DIMENSION is the property name
+    (TYPE=PVAL) or dimension id (TYPE=DVAL) of the index key.
+    TYPE="PROPERTY_VALUE" has been deprecated
+  -->
+  <xs:element name="KEY_DIMENSION">
+    <xs:complexType>
+      <xs:attribute name="TYPE" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="PVAL"/>
+            <xs:enumeration value="DVAL"/>
+            <xs:enumeration value="PROPERTY_VALUE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="ID" use="required"/>
+      <xs:attribute name="MIN_VALS" default="0"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    ==============================================================
+    The PROFILE element is a general element used for 
+    personalization.  It allows you to use strings to 
+    refer to named end user groups in various configuration
+    elements.
+    For example:
+    	<PROFILE>old_guy</PROFILE>
+    	<PROFILE>baseball_fan</PROFILE>
+    ============================================================
+  -->
+  <xs:element name="PROFILE" type="xs:string"/>
+  <!--
+    ==============================================================
+    The PHRASE element specifies a phrase entry in the Navigation
+    Engine's phrase dictionary which is a collection of phrases.
+    The Automatic Phrasing feature uses this phrase dictionary
+    to suggest alternative queries given a user's query by
+    phrasing certain contiguous subsequences of search query
+    terms.
+    
+    Here is an example of how one would use the PHRASE element:
+    	<PHRASE>New York</PHRASE>
+    ============================================================
+  -->
+  <xs:element name="PHRASE" type="xs:string"/>
+</xs:schema>

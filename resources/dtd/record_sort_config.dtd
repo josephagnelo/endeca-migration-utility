@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT RECORD_SORT_CONFIG (COMMENT?, RECORD_SORT*)>
+
+<!--
+	The RECORD_SORT element enables either a dimension or property for sorting.
+-->
+<!ELEMENT RECORD_SORT EMPTY>
+<!ATTLIST RECORD_SORT
+	NAME				CDATA			#REQUIRED
+>

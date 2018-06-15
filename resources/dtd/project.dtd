@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+
+    PROJECT - Points to all the elements that make up a project.
+
+-->
+
+<!ELEMENT PROJECT (DIMENSION_INPUTS?, RECORD_INPUTS?)>
+<!ATTLIST PROJECT
+	NAME				CDATA			#REQUIRED
+	AUTO_PROPMAP			CDATA			#IMPLIED
+>
+
+<!ELEMENT DIMENSION_INPUTS (INPUT+)>
+<!ELEMENT RECORD_INPUTS (INPUT+)>
+
+<!ELEMENT INPUT EMPTY>
+<!ATTLIST INPUT
+	FORMAT				CDATA			#REQUIRED
+	URL				CDATA			#REQUIRED
+        NUM_PARTITIONS			CDATA			#REQUIRED
+        PARTITION			CDATA			#IMPLIED
+        SEGMENT				CDATA			#IMPLIED
+>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright Endeca 2008. All Rights Reserved.
+  
+  No entity shall modify, change, or add to the contents of this file without the
+  express prior written consent of Endeca, otherwise all warranties are void.
+  
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:include schemaLocation="common.xsd"/>
+  <xs:element name="DIMENSIONS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="NUM_DVALS"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="DIMENSION"/>
+      </xs:sequence>
+      <xs:attribute name="VERSION"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NUM_DVALS" type="xs:string"/>
+  <xs:element name="DIMENSION">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="DIMENSION_ID"/>
+        <xs:element ref="DIMENSION_NODE"/>
+      </xs:sequence>
+      <xs:attribute name="NAME"/>
+      <xs:attribute name="SRC_TYPE">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="INTERNAL"/>
+            <xs:enumeration value="PROPMAPPER"/>
+            <xs:enumeration value="AUTOGEN"/>
+            <xs:enumeration value="EXTERNAL"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="SRC_FILE"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DIMENSION_NODE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="DVAL"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="DIMENSION_NODE"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- DVAL TYPE="DVAL" is depricated; use EXACT instead. -->
+  <xs:element name="DVAL">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="DVAL_ID"/>
+        <xs:element maxOccurs="unbounded" ref="SYN"/>
+        <xs:element minOccurs="0" ref="LBOUND"/>
+        <xs:element minOccurs="0" ref="UBOUND"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="PROP"/>
+      </xs:sequence>
+      <xs:attribute name="TYPE" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="EXACT"/>
+            <xs:enumeration value="RANGE"/>
+            <xs:enumeration value="LEVEL"/>
+            <xs:enumeration value="SIFT"/>
+            <xs:enumeration value="DVAL"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LBOUND" type="BOUNDC"/>
+  <xs:element name="UBOUND" type="BOUNDC"/>
+  <xs:complexType name="BOUNDC">
+    <xs:sequence>
+      <xs:element ref="BOUND"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BOUND">
+    <xs:complexType>
+      <xs:attribute name="TYPE" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="STRING"/>
+            <xs:enumeration value="INTEGER"/>
+            <xs:enumeration value="FLOAT"/>
+            <xs:enumeration value="CURRENCY"/>
+            <xs:enumeration value="DATE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="VALUE" use="required"/>
+      <xs:attribute name="CLOSURE" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="OPEN"/>
+            <xs:enumeration value="CLOSED"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SYN">
+    <xs:complexType mixed="true">
+      <xs:attribute name="DISPLAY" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="TRUE"/>
+            <xs:enumeration value="FALSE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="SEARCH" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="TRUE"/>
+            <xs:enumeration value="FALSE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="CLASSIFY" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="TRUE"/>
+            <xs:enumeration value="FALSE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

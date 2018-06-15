@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+
+	The SEARCH_INDEX element controls the construction of the search
+	index for record search on properties and dimensions and for
+	dimension value search across the set of dimension values (dvals).
+
+	INDEX_BUCKET_SIZE		CDATA			#IMPLIED
+
+    	INDEX_BUCKET_SIZE has been deprecated (>4.6) and will be ignored
+    	by DevStudio.
+	The INDEX_BUCKET_SIZE attribute specifies the maximum size (in MB)
+	for each temporary file used during computation of the text search
+	inverted index.  This number should be a valid, positive, numeric
+	(double) quantity.  For example, the default value of "128"
+	specifies that the maximum temporary file size is 128 megabytes.
+
+	INMEM_INDEX_THRESHOLD		CDATA			#IMPLIED
+
+    	INMEM_INDEX_THRESHOLD has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The INMEM_INDEX_THRESHOLD attribute specifies the maximum text size
+	(in MB) for which text indexing will be done entirely in memory.
+	If the text size is larger than this threshold, then temporary
+	files on disk will be used.
+
+	TEXTSEARCH_SIZE_EST		CDATA			#IMPLIED
+
+    	TEXTSEARCH_SIZE_EST has been deprecated (>4.6) and will be ignored
+    	by DevStudio.
+	The TEXTSEARCH_SIZE_EST attribute specifies an estimate of the
+	text size (in MB) for which text indexing will be done entirely
+	in memory.  If the text size is larger than this threshold, then
+	temporary files on disk will be used.
+
+	MIN_WORD_OCCURRENCES		CDATA			#IMPLIED
+
+    	MIN_WORD_OCCURRENCES has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The MIN_WORD_OCCURRENCES attribute specifies the minimum number
+	of times a word must occur for it to be put into the spelling
+	correction dictionary.
+
+	MIN_WORD_LENGTH			CDATA			#IMPLIED
+
+    	MIN_WORD_LENGTH has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The MIN_WORD_LENGTH attribute specifies the minimum number of
+	a characters that a word must contain for it to be put into the
+	spelling correction dictionary.  By default, all words are put
+	into the dictionary.
+
+	MAX_WORD_LENGTH			CDATA			#IMPLIED
+
+    	MAX_WORD_LENGTH has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The MAX_WORD_LENGTH attribute specifies the maximum number of
+	a characters that a word may contain for it to be put into the
+	spelling correction dictionary.  By default, all words are put
+	into the dictionary.
+
+	The existence of the contained elements, WILDCARD_INDEX and
+	POSITIONAL_INDEX specifies whether the
+	wildcard index, the positional index, and the word affinity index,
+	respectively, should be created e.g.
+
+	<SEARCH_INDEX MIN_WORD_LENGTH="2">
+		<WILDCARD_INDEX/>
+	</SEARCH_INDEX>
+
+	specifies that a WILDCARD index should be generated for the text
+	collection that contains this SEARCH_INDEX element.
+
+-->
+<!ELEMENT SEARCH_INDEX (WILDCARD_INDEX?,POSITIONAL_INDEX?,WORDAFFINITY_INDEX?)>
+<!ATTLIST SEARCH_INDEX
+	INDEX_BUCKET_SIZE		CDATA			#IMPLIED
+	INMEM_INDEX_THRESHOLD		CDATA			#IMPLIED
+	TEXTSEARCH_SIZE_EST		CDATA			#IMPLIED
+	MIN_WORD_OCCURRENCES		CDATA			#IMPLIED
+	MIN_WORD_LENGTH			CDATA			#IMPLIED
+	MAX_WORD_LENGTH			CDATA			#IMPLIED
+>
+
+<!--
+	The WILDCARD_INDEX element specifies that a wildcard index should
+	be created for the text collection that contains it.  In addition,
+	it allows you to control the behavior of the construction of the
+	wildcard index itself.
+
+	MAX_NGRAM_LENGTH		CDATA			#IMPLIED
+
+    	MAX_NGRAM_LENGTH has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The MAX_NGRAM_LENGTH attribute specifies the maximum ngram length
+	that should be indexed.  All substrings of this length or shorter
+	will be indexed.  Thus, if a user does a wildcard search with
+	a string that is less than or equal to this length, then exact
+	results can returned directly from the index.  If the wildcard
+	search includes a substring longer than this length, then the
+	results returned from the index will be post-processed so that
+	false-positives are eliminated.
+
+	DICTIONARY_WILDCARD		(TRUE | FALSE)		#IMPLIED
+
+    	DICTIONARY_WILDCARD has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The DICTIONARY_WILDCARD attribute specifies whether a wildcard
+	index should be generated for the dictionary of words for the text
+	collection containing this element.  The default value of this
+	attribute is TRUE when the containing element consists of 'offline'
+	documents and FALSE otherwise.
+
+	DICTIONARY_MAX_NGRAM_LENGTH	CDATA			#IMPLIED
+
+    	DICTIONARY_MAX_NGRAM_LENGTH has been moved to the RECSEARCH_INDEX and DIMSEARCH_INDEX
+    	element (>4.6) and will be moved by DevStudio.
+	The DICTIONARY_MAX_NGRAM_LENGTH attribute specifies the maximum
+	ngram length that should be indexed in the dictionary wildcard index.
+
+-->
+<!ELEMENT WILDCARD_INDEX EMPTY>
+<!ATTLIST WILDCARD_INDEX
+	MAX_NGRAM_LENGTH		CDATA			#IMPLIED
+	DICTIONARY_WILDCARD		(TRUE | FALSE)		#IMPLIED
+	DICTIONARY_MAX_NGRAM_LENGTH	CDATA			#IMPLIED
+>
+
+<!--
+	The POSITIONAL_INDEX element is deprecated.  Positional indexing is 
+	now enabled by default.  The existence of this element does not change 
+	the behavior of the index, i.e., positional indicies are always generated. 
+
+-->
+<!ELEMENT POSITIONAL_INDEX EMPTY>
+
+<!--
+    	WORDAFFINITY_INDEX has been deprecated (>4.6) and will be ignored
+    	by DevStudio.
+	The existence of the WORDAFFINITY_INDEX specifies that the word
+	affinity index should be created for the text collection containing
+	this element.  See the Endeca Documentation for more details on
+	the word affinity index.
+
+-->
+<!ELEMENT WORDAFFINITY_INDEX EMPTY>
+
+

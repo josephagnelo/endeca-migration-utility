@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ELEMENT CRAWL_PROFILE (CRAWL_PROFILE_CONFIG_REF, CRAWL_PROFILE_URL_LIST_REF)>
+<!ATTLIST CRAWL_PROFILE
+NAME			CDATA		#REQUIRED
+ID			CDATA		#REQUIRED
+>
+
+<!ELEMENT CRAWL_PROFILE_CONFIG_REF EMPTY>
+<!ATTLIST CRAWL_PROFILE_CONFIG_REF
+URL			CDATA		#REQUIRED
+>
+<!ELEMENT CRAWL_PROFILE_URL_LIST_REF EMPTY>
+<!ATTLIST CRAWL_PROFILE_URL_LIST_REF
+URL			CDATA		#REQUIRED
+>

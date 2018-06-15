@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT RELRANK_STRATEGIES (COMMENT?, RELRANK_STRATEGY*)>
+
+<!--
+	The RELRANK_STRATEGY element contains a list of strategies,
+	that should be composed in the order listed and then applied to
+	search results.  For example,
+
+	<RELRANK_STRATEGY NAME="is available">
+		<RELRANK_STATIC NAME="Availability" ORDER="DESCENDING"/>
+	</RELRANK_STRATEGY>
+	<RELRANK_STRATEGY NAME="best price">
+		<RELRANK_STATIC NAME="Price" ORDER="ASCENDING"/>
+	</RELRANK_STRATEGY>
+	<RELRANK_STRATEGY NAME="product search rank">
+		<RELRANK_MODULE NAME="is available"/>
+		<RELRANK_FIELD/>
+		<RELRANK_PHRASE/>
+		<RELRANK_MODULE NAME="best price"/>
+	</RELRANK_STRATEGY>
+
+	NAME				CDATA			#REQUIRED
+
+	The NAME attribute specifies the name of the strategy and will be
+	used to refer to the strategies during the ENE operation.
+
+-->
+<!ELEMENT RELRANK_STRATEGY (
+		  RELRANK_STATIC
+		| RELRANK_EXACT
+		| RELRANK_PHRASE
+		| RELRANK_APPROXPHRASE
+		| RELRANK_GLOM
+		| RELRANK_SPELL
+		| RELRANK_FIELD
+		| RELRANK_MAXFIELD
+		| RELRANK_INTERP
+		| RELRANK_FREQ
+		| RELRANK_WFREQ
+		| RELRANK_NTERMS
+		| RELRANK_PROXIMITY	
+		| RELRANK_FIRST
+		| RELRANK_NUMFIELDS
+		| RELRANK_MODULE
+		)+>
+<!ATTLIST RELRANK_STRATEGY
+	NAME				CDATA			#REQUIRED
+>
+
+<!--
+	The RELRANK_MODULE can be used to refer to other RELRANK_STRATEGY's
+	and compose them as in the example described above.
+
+	NAME				CDATA			#REQUIRED
+
+	NAME refers to another RELRANK_STRATEGY that has been defined.
+
+-->
+<!ELEMENT RELRANK_MODULE (RELRANK_MODULE_PARAM*)>
+<!ATTLIST RELRANK_MODULE
+	NAME				CDATA			#REQUIRED
+>
+<!ELEMENT RELRANK_MODULE_PARAM (#PCDATA)>
+
+<!--
+	The RELRANK_STATIC element implements the "static" relevance
+	ranking module.  Refer to the Endeca Documentation for more
+	information on using relevance ranking.
+
+	NAME				CDATA			#REQUIRED
+
+	NAME specifies the name of a property or dimension that has
+	been marked as searchable (via use of the SEARCH_INDEX or
+	DIM_REC_SEARCH_INDEX elements, respectively).
+
+	ORDER				(ASCENDING
+					| DESCENDING)		#REQUIRED
+
+	ORDER specfies how records should be sorted with respect to the
+	specified property or dimension.
+
+-->
+<!ELEMENT RELRANK_STATIC EMPTY>
+<!ATTLIST RELRANK_STATIC
+	NAME				CDATA			#REQUIRED
+	ORDER				(ASCENDING
+					| DESCENDING)		#REQUIRED
+>
+
+<!--
+	The RELRANK_EXACT element implements the "exact" relevance ranking
+	module.  Refer to the Endeca Documentation for more information
+	on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_EXACT EMPTY>
+
+<!--
+	The RELRANK_PHRASE element implements the "phrase" relevance
+	ranking module.  Refer to the Endeca Documentation for more
+	information on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_PHRASE EMPTY>
+<!ATTLIST RELRANK_PHRASE
+	SUBPHRASE 			(TRUE | FALSE) 		"FALSE"
+	APPROXIMATE 		(TRUE | FALSE) 		"FALSE" 
+	QUERY_EXPANSION		(TRUE | FALSE) 		"FALSE" 	
+>
+<!--
+	The RELRANK_APPROXPHRASE element implements the "approximate phrase"
+	relevance ranking module.  Refer to the Endeca Documentation for
+	more information on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_APPROXPHRASE EMPTY>
+
+<!--
+	The RELRANK_GLOM element implements the "glom" relevance ranking
+	module.  Refer to the Endeca Documentation for more information
+	on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_GLOM EMPTY>
+
+<!--
+	The RELRANK_SPELL element implements the "spell" relevance ranking
+	module.  Refer to the Endeca Documentation for more information
+	on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_SPELL EMPTY>
+
+<!--
+	The RELRANK_FIELD element implements the "field" relevance ranking
+	module.  Refer to the Endeca Documentation for more information
+	on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_FIELD EMPTY>
+
+<!--
+	The RELRANK_MAXFIELD element implements the "max field" relevance
+	ranking module.  Refer to the Endeca Documentation for more
+	information on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_MAXFIELD EMPTY>
+
+<!--
+	The RELRANK_INTERP element implements the "interp" relevance
+	ranking module.  Refer to the Endeca Documentation for more
+	information on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_INTERP EMPTY>
+
+<!--
+	The RELRANK_FREQ element implements the "frequency" relevance
+	ranking module.  Refer to the Endeca Documentation for more
+	information on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_FREQ EMPTY>
+
+<!--
+	The RELRANK_FREQ element implements the "weighted frequency"
+	relevance ranking module.  Refer to the Endeca Documentation for
+	more information on using relevance ranking.
+
+-->
+<!ELEMENT RELRANK_WFREQ EMPTY>
+
+<!ELEMENT RELRANK_NTERMS EMPTY>
+
+<!ELEMENT RELRANK_PROXIMITY EMPTY>
+<!-- 
+        The RELRANK_PROXIMITY element implements the "proximity" relevance ranking
+        module. Refer to the Endeca Documentation for more information on using
+        relevance ranking.
+-->
+
+<!ELEMENT RELRANK_FIRST EMPTY>
+<!--
+        The RELRANK_FIRST element implements the "first position" relevance 
+	ranking module. Refer to the Endeca Documentation for more information
+	on using relevance ranking.
+-->
+
+<!ELEMENT RELRANK_NUMFIELDS EMPTY>
+<!--
+        The RELRANK_NUMFIELDS element implements the "number of fields" relevance 
+	ranking module. Refer to the Endeca Documentation for more information
+	on using relevance ranking.
+-->
+

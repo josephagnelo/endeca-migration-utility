@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2001, 2017, Oracle and/or its affiliates. All rights reserved.
+  ~ Oracle and Java are registered trademarks of Oracle and/or its
+  ~ affiliates. Other names may be trademarks of their respective owners.
+  ~ UNIX is a registered trademark of The Open Group.
+  ~
+  ~ This software and related documentation are provided under a license
+  ~ agreement containing restrictions on use and disclosure and are
+  ~ protected by intellectual property laws. Except as expressly permitted
+  ~ in your license agreement or allowed by law, you may not use, copy,
+  ~ reproduce, translate, broadcast, modify, license, transmit, distribute,
+  ~ exhibit, perform, publish, or display any part, in any form, or by any
+  ~ means. Reverse engineering, disassembly, or decompilation of this
+  ~ software, unless required by law for interoperability, is prohibited.
+  ~ The information contained herein is subject to change without notice
+  ~ and is not warranted to be error-free. If you find any errors, please
+  ~ report them to us in writing.
+  ~ U.S. GOVERNMENT END USERS: Oracle programs, including any operating
+  ~ system, integrated software, any programs installed on the hardware,
+  ~ and/or documentation, delivered to U.S. Government end users are
+  ~ "commercial computer software" pursuant to the applicable Federal
+  ~ Acquisition Regulation and agency-specific supplemental regulations.
+  ~ As such, use, duplication, disclosure, modification, and adaptation
+  ~ of the programs, including any operating system, integrated software,
+  ~ any programs installed on the hardware, and/or documentation, shall be
+  ~ subject to license terms and license restrictions applicable to the
+  ~ programs. No other rights are granted to the U.S. Government.
+  ~ This software or hardware is developed for general use in a variety
+  ~ of information management applications. It is not developed or
+  ~ intended for use in any inherently dangerous applications, including
+  ~ applications that may create a risk of personal injury. If you use
+  ~ this software or hardware in dangerous applications, then you shall
+  ~ be responsible to take all appropriate fail-safe, backup, redundancy,
+  ~ and other measures to ensure its safe use. Oracle Corporation and its
+  ~ affiliates disclaim any liability for any damages caused by use of this
+  ~ software or hardware in dangerous applications.
+  ~ This software or hardware and documentation may provide access to or
+  ~ information on content, products, and services from third parties.
+  ~ Oracle Corporation and its affiliates are not responsible for and
+  ~ expressly disclaim all warranties of any kind with respect to
+  ~ third-party content, products, and services. Oracle Corporation and
+  ~ its affiliates will not be responsible for any loss, costs, or damages
+  ~ incurred due to your access to or use of third-party content, products,
+  ~ or services.
+  -->
+
+<xs:schema xmlns="http://endeca.com/schema/content-template/2008" xmlns:content-template="http://endeca.com/schema/content-template/2008" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:content="http://endeca.com/schema/content/2008" targetNamespace="http://endeca.com/schema/content-template/2008" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1.0">
+  <xs:element name="ContentTemplate" type="ContentTemplate" />	
+  <xs:complexType name="ContentTemplate">
+    <xs:sequence>
+      <xs:element name="RuleInfo" type="RuleInfo" minOccurs="0"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="ThumbnailUrl" type="xs:string" minOccurs="0"/>
+      <xs:element name="ContentItem" type="ContentItem"/>
+      <xs:element name="EditorPanel" type="EditorPanel"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:Name" use="required"/>
+    <xs:attribute name="id" type="xs:Name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="RuleInfo">
+    <xs:sequence>
+      <xs:element name="Property" type="RuleProperty" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="zone" type="xs:string" use="required"/>
+    <xs:attribute name="style" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="RuleProperty">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="ContentItem">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element name="Property" type="Property" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Property">
+    <xs:choice>
+      <xs:element name="String" type="String"/>
+      <xs:element name="Boolean" type="String"/>
+      <xs:element name="RecordList" type="RecordList"/>
+      <xs:element name="ContentItem" type="ContentItemRef"/>
+      <xs:element name="ContentItemList" type="ContentItemRefList"/>
+      <xs:any namespace="##other" processContents="lax"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:Name" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="String">
+    <xs:simpleContent>
+      <xs:extension base="xs:string"/>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="RecordList"/>
+  <xs:complexType name="DimensionList"/>
+  <xs:complexType name="ContentItemRef">
+    <xs:attribute name="type" type="xs:Name" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="ContentItemRefList">
+    <xs:attribute name="type" type="xs:Name" use="required"/>
+    <xs:attribute name="maxContentItems" type="xs:nonNegativeInteger" use="optional" default="0"/>
+  </xs:complexType>
+  <xs:complexType name="EditorPanel">
+    <xs:choice>
+      <xs:element name="BasicContentItemEditor" type="BasicContentItemEditor">
+        <xs:unique name="RecordsSelectorPropertyName">
+          <xs:selector xpath="content-template:RecordSelector" />
+          <xs:field xpath="@propertyName" />
+        </xs:unique>
+        <xs:unique name="NavigationRecordsEditorPropertyName">
+          <xs:selector xpath="content-template:NavigationRecordsEditor" />
+          <xs:field xpath="@propertyName" />
+        </xs:unique>
+        <xs:unique name="NavigationRefinementsSelectorPropertyName">
+          <xs:selector xpath="content-template:NavigationRefinementsSelector" />
+          <xs:field xpath="@propertyName" />
+        </xs:unique>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="BasicContentItemEditor">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="GroupLabel" type="GroupLabel"/>
+        <xs:element name="StringEditor" type="StringEditor"/>
+        <xs:element name="RecordSelector" type="RecordSelector"/>
+        <xs:element name="ComboBox" type="ComboBox"/>
+        <xs:element name="CheckBox" type="CheckBox"/>
+        <xs:element name="ImagePreview" type="ImagePreview"/>
+        <xs:element name="NavigationRecordsEditor" type="NavigationRecordsEditor"/>
+        <xs:element name="NavigationRefinementsSelector" type="NavigationRefinementsSelector"/>
+        <xs:any namespace="##other" processContents="lax"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GroupLabel">
+    <xs:attribute name="label" type="xs:string" use="required"/>
+  </xs:complexType>
+  <!-- editable attribute is deprecated as of v1.1.0; use 'enabled' instead -->
+  <xs:complexType name="StringEditor">
+    <xs:attribute name="propertyName" type="xs:Name" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="editable" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="width" type="xs:positiveInteger" use="optional" default="300"/>
+    <xs:attribute name="height" type="xs:positiveInteger" use="optional" default="24"/>
+    <xs:attribute name="wordWrap" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="RecordSelector">
+    <xs:sequence>
+      <xs:element name="PreviewProperty" type="PreviewProperty" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="propertyName" type="xs:Name" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="maxRecords" type="xs:positiveInteger" use="optional" default="10"/>
+    <xs:attribute name="augmentRecordFilter" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="previewRecordIdLabel" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CheckBox">
+    <xs:attribute name="propertyName" type="xs:Name" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="ComboBox">
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="ComboBoxItem" type="ComboBoxItem"/>
+    </xs:sequence>
+    <xs:attribute name="propertyName" type="xs:Name" use="required"/>
+    <xs:attribute name="editable" type="xs:boolean" use="optional" default="false"/>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="usePrompt" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="prompt" type="xs:string" use="optional"/>
+    <xs:attribute name="rows" type="xs:positiveInteger" use="optional" default="5"/>
+    <xs:attribute name="maxWidth" type="xs:positiveInteger" use="optional" default="300"/>
+  </xs:complexType>
+  <xs:complexType name="ImagePreview">
+    <xs:attribute name="urlExpression" type="xs:string" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="maxHeight" type="xs:positiveInteger" use="optional" default="100"/>
+    <xs:attribute name="maxWidth" type="xs:positiveInteger" use="optional" default="300"/>
+    <xs:attribute name="displayUrl" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="NavigationRefinementsSelector">
+    <xs:attribute name="propertyName" type="xs:Name" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="ComboBoxItem">
+    <xs:attribute name="data" type="xs:string" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="PreviewProperty">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="NavigationRecordsEditor">
+    <xs:sequence>
+      <xs:element name="SortChoices" type="SortChoices" minOccurs="0"/>
+      <xs:element name="RelevanceRankingChoices" type="RelevanceRankingChoices" minOccurs="0"/>
+      <xs:element name="RecordsPerPage" type="RecordsPerPage" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="propertyName" type="xs:Name" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="SortChoices">
+    <xs:sequence>
+      <xs:element name="SortChoice" type="SortChoice" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="SortChoice">
+    <xs:sequence>
+      <xs:element name="Sort" type="Sort" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="label" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="Sort">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="descending" type="xs:boolean" use="optional" default="false"/>
+        <xs:attribute name="latitude" type="xs:double" use="optional"/>
+        <xs:attribute name="longitude" type="xs:double" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="RelevanceRankingChoices">
+    <xs:sequence>
+      <xs:element name="RelevanceRankingChoice" type="RelevanceRankingChoice" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="RelevanceRankingChoice">
+    <xs:attribute name="label" type="xs:string" use="required"/>
+    <xs:attribute name="relevanceRanking" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="RecordsPerPage">
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="minimumRecords" type="xs:unsignedLong" use="optional"/>
+    <xs:attribute name="maximumRecords" type="xs:unsignedLong" use="optional"/>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!--
+	The RESOURCE_CONFIG element specifies all the resources that are
+	available for use by the manager.
+
+	Each HOST element specifies an additional host that is available
+	for the manager to use.  For more details about the HOST element,
+	refer to the comments for it.
+
+	NUM_SEGMENTS			CDATA			"1"
+
+	The NUM_SEGMENTS attribute specifies the number of segments that will
+	constitute a single instance of the data.  For example, if a dataset
+	is split into three partitions, then NUM_SEGMENTS should be 3.
+	NUM_SEGMENTS corresponds to the number of dgraphs with which each
+	agraph will communicate (either via virtual IP's or via real IP's).
+
+	NUM_REPLICAS			CDATA			"1"
+
+	The NUM_REPLICAS attribute specifies the number of replicas that
+	should be created of the entire dataset.  For example, if you only
+	want a single additional copy of the data for redundancy, you should
+	specify 2 for NUM_REPLICAS; however, if for additional performance,
+	you need 4 replicas, then you should specify 4 for NUM_REPLICAS.
+
+	In general, the total number of:
+	- ENE_SERVER elements must be NUM_SEGMENTS * NUM_REPLICAS
+	- INDEXER elements must be NUM_SEGMENTS
+	- AGGR_ENE_SERVER elements must be NUM_REPLICAS
+
+	JCD_USE_SSL			(TRUE | FALSE)		"FALSE"
+
+	The JCD_USE_SSL attribute specifies that all the JCD's in
+	this deployment will use SSL and the manager must use SSL when
+	communicating with these JCD's.
+
+	ENE_USE_SSL			(TRUE | FALSE)		"FALSE"
+
+	The ENE_USE_SSL attribute specifies that the application should SSL.
+
+-->
+<!ELEMENT RESOURCE_CONFIG (HOST+)>
+<!ATTLIST RESOURCE_CONFIG
+	NUM_SEGMENTS			CDATA			"1"
+	NUM_REPLICAS			CDATA			"1"
+	JCD_USE_SSL			(TRUE | FALSE)		"FALSE"
+	ENE_USE_SSL			(TRUE | FALSE)		"FALSE"
+>
+
+<!--
+	The HOST element defines a logical host that should be used by
+	the manager.  The contained elements define the different rolls
+	that this HOST can play.
+
+	NAME				CDATA			#REQUIRED
+
+	The NAME attribute specifies the DNS name for a host.  No two
+	HOST elements may have an identical NAME attribute. Since hosts
+	are identified by the manager by their literal string name, and
+	not by their DNS names, the manager will allow the same HOST to be
+	specified more than once with names such as mymachine.dev.endeca.com,
+	mymachine.dev, and mymachine.
+
+	APP_ROOT_PATH			CDATA			#REQUIRED
+
+	The APP_ROOT_PATH attribute specifies the directory on disk under
+	which the manager should keep all the application files (e.g. forge
+	output, dgidx output, log files, etc.).  Note that you MUST create
+	this path manually before the manager can start using it.
+
+	INCOMING_PATH			CDATA			#IMPLIED
+
+	The INCOMING_PATH attribute specifies the directory on disk under
+	which the user has placed the input files. This path must exist, if
+	specified. If missing, the manager assumes a default location.
+
+-->
+<!ELEMENT HOST (
+		JCD,
+		FORGE?,
+		INDEXER*,
+		ENE_SERVER*,
+		AGGR_ENE_SERVER*,
+		LOG_SERVER?,
+	    REPORT_GENERATOR?,
+		CRAWLER?
+)>
+<!ATTLIST HOST
+	NAME				CDATA			#REQUIRED
+	APP_ROOT_PATH			CDATA			#REQUIRED
+	INCOMING_PATH			CDATA			#IMPLIED
+>
+
+<!--
+	The JCD element specifies the JCD information for the containing
+	HOST.
+
+	PORT				CDATA    		#REQUIRED
+
+	The PORT attribute specifies the port on which the JCD is listening
+	for requests.
+
+-->
+<!ELEMENT JCD EMPTY>
+<!ATTLIST JCD
+	PORT				CDATA			#REQUIRED
+>
+
+<!--
+	The FORGE element specifies that the containing host can run a
+	forge process.	Only one HOST element in a resource config can
+	play this role.
+-->
+<!ELEMENT FORGE EMPTY>
+
+<!--
+	The INDEXER element specifies that the containing host can run a
+	dgidx process.
+
+	SEGMENT				CDATA    		"1"
+
+	The specified segment is the data segment that the containing host
+	will index.  A single host may contain more than one INDEXER element;
+	however, each INDEXER element in the entire resource configuration
+	must specify a unique value for SEGMENT.
+
+-->
+<!ELEMENT INDEXER EMPTY>
+<!ATTLIST INDEXER
+	SEGMENT				CDATA			"1"
+>
+
+<!--
+	The ENE_SERVER element specifies that the containing host should
+	run a dgraph process.
+
+	PORT				CDATA    		#REQUIRED
+
+	The PORT attribute specifies the port on which the ENE should
+	listen for requests.
+
+	SEGMENT				CDATA    		"1"
+
+	The specified segment is the data segment that the containing host
+	will run.  A single host may contain more than one ENE_SERVER
+	element. An ENE_SERVER element may specify the same value for
+	SEGMENT more than once.  The total number of ENE_SERVER elements
+	that specify a particular SEGMENT must be the same as NUM_REPLICAS.
+	As mentioned before, the total nubmer of ENE_SERVER elements in
+	the resource configuration must be NUM_REPLICAS * NUM_SEGMENTS.
+
+-->
+<!ELEMENT ENE_SERVER EMPTY>
+<!ATTLIST ENE_SERVER
+	PORT				CDATA			#REQUIRED
+	SEGMENT				CDATA    		"1"
+>
+
+<!--
+	The AGGR_ENE_SERVER element specifies that the containing host
+	should run a agraph process.
+
+	PORT				CDATA    		#REQUIRED
+
+	The PORT attribute specifies the port on which the agraph should
+	listen for requests.
+
+-->
+<!ELEMENT AGGR_ENE_SERVER EMPTY>
+<!ATTLIST AGGR_ENE_SERVER
+       	PORT				CDATA			#REQUIRED
+>
+
+<!ELEMENT LOG_SERVER EMPTY>
+<!ATTLIST LOG_SERVER
+    PORT                CDATA           #REQUIRED
+>
+
+<!ELEMENT REPORT_GENERATOR EMPTY>
+
+<!ELEMENT CRAWLER EMPTY>
+<!ATTLIST CRAWLER
+    PORT                CDATA           #REQUIRED
+>
+
+<!-- 
+********************************************************* 
+********************************************************* 
+-->
+
+
+<!--
+EMGR_UPDATE_CONFIG
+Input to manager methods: setAppConfig, setResourceConfig
+-->
+<!ELEMENT EMGR_UPDATE_CONFIG (CONFIG_FILE+)>
+
+<!--
+EMGR_REPLY
+Returned by manager methods: startUpdate, stopUpdate, startENE, stopENE,
+setAppConfig, setResourceConfig
+-->
+<!ELEMENT EMGR_REPLY (RETURN_CODE)>
+
+<!--
+EMGR_REPLY_CONFIG
+Returned by manager methods: getAppConfig, getResourceConfig
+-->
+<!ELEMENT EMGR_REPLY_CONFIG (RETURN_CODE,CONFIG_FILE+)>
+
+
+<!-- 
+********************************************************* 
+********************************************************* 
+-->
+
+
+<!--
+EMGR_REPLY_STATUS
+Returned by manager methods: getSystemStatus
+-->
+<!ELEMENT EMGR_REPLY_STATUS (
+		RETURN_CODE,
+		COMPONENT_STATUS*,
+		UPDATE_STATUS*,
+		FORGE_STATUS*, 
+		INDEXER_STATUS*,
+		ENE_SERVER_STATUS*,
+		AGGR_ENE_SERVER_STATUS*,
+ 		LOG_SERVER_STATUS?,
+ 		CRAWLER_STATUS?,
+ 		REPORTING_STATUS?)>
+
+<!--
+RETURN_CODE
+General return code, indicating resulting system status.
+PCDATA contains optional error message.
+-->
+<!ELEMENT RETURN_CODE (#PCDATA)>
+<!ATTLIST RETURN_CODE
+	ACTIONSTATUS		(OK | ERROR)			#REQUIRED
+        APPSTATUS		(RUNNING | STOPPED |
+				UPDATING | ERROR)		#REQUIRED
+	CURRENT_EMGR_TIME	CDATA				#REQUIRED
+	CURRENT_EMGR_TIME_STR	CDATA				#REQUIRED
+	NEXT_UPDATE_START	CDATA				#REQUIRED
+>
+
+<!--
+CONFIG_FILE
+PCDATA contains file contents, with XML-reserved characters encoded as follows:
+        > encoded as &gt;
+        < encoded as &lt;
+        ' encoded as &apos;
+        " encoded as &quot;
+        & encoded as &amp;
+        % encoded as &#37; 
+
+If the file contents are XML, this results in a "double XML encoding". For
+example, the following XML:
+        <FOO>This &amp; that</FOO>
+would be encoded as:
+        &lt;FOO&gt;This &amp;amp; that&lt;/FOO&gt;
+-->
+<!ELEMENT CONFIG_FILE (#PCDATA)>
+<!ATTLIST CONFIG_FILE
+	NAME			CDATA				#REQUIRED
+>
+
+<!--
+UPDATE_STATUS
+-->
+<!ELEMENT UPDATE_STATUS (ERROR_LOG?, JCD_JOB*)>
+<!ATTLIST UPDATE_STATUS 
+	STATUS			(
+				PENDING |
+				RUNNING |
+				COMPLETED |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+>
+
+<!--
+JCD_JOB elements provide low-level process-oriented view of update
+process.
+-->
+<!ELEMENT JCD_JOB EMPTY>
+<!ATTLIST JCD_JOB 
+	STATUS			(
+				PENDING |
+				RUNNING |
+				COMPLETED |
+				FAILED |
+				STOPPED |
+				UNKONWN
+				)				#REQUIRED
+	NAME			CDATA				#REQUIRED
+	HOST			CDATA				#REQUIRED
+	JCD_PORT		CDATA				#REQUIRED
+	STDOUT			CDATA				#IMPLIED
+	STDERR			CDATA				#IMPLIED
+>
+
+<!--
+COMPONENT_STATUS
+-->
+<!ELEMENT COMPONENT_STATUS (FILE*,LOCK?)>
+<!ATTLIST COMPONENT_STATUS
+	COMPONENT		CDATA				#REQUIRED
+	LASTMODIFIED		CDATA				#IMPLIED
+	LASTMODIFIED_STR    CDATA				#IMPLIED
+	LASTMODIFIED_USER   CDATA				#IMPLIED
+>
+
+<!ELEMENT FILE (LOCK?)>
+<!ATTLIST FILE
+	FILENAME		CDATA				#REQUIRED
+	FILESIZE		CDATA				#REQUIRED
+	LASTMODIFIED		CDATA				#REQUIRED
+	LASTMODIFIED_STR	CDATA				#REQUIRED
+	LASTMODIFIED_USER	CDATA				#REQUIRED
+>
+
+<!ELEMENT LOCK EMPTY>
+<!ATTLIST LOCK
+	OWNER			CDATA				#REQUIRED
+	MESSAGE			CDATA				#REQUIRED
+>
+
+<!--
+FORGE_STATUS
+-->
+<!ELEMENT FORGE_STATUS (ERROR_LOG?)>
+<!ATTLIST FORGE_STATUS 
+	STATUS			(
+				PENDING |
+				RUNNING |
+				COMPLETED |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+	HOST			CDATA				#REQUIRED
+>
+
+<!--
+INDEXER_STATUS
+-->
+<!ELEMENT INDEXER_STATUS (ERROR_LOG?)>
+<!ATTLIST INDEXER_STATUS
+	STATUS			(
+				PENDING |
+				RUNNING |
+				COMPLETED |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+	HOST			CDATA				#REQUIRED
+	SEGMENT			CDATA				#REQUIRED
+>
+
+<!--
+ENE_SERVER_STATUS
+-->
+<!ELEMENT ENE_SERVER_STATUS (ERROR_LOG?,STATS?)>
+<!ATTLIST ENE_SERVER_STATUS
+	STATUS			(
+				RUNNING |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+	HOST			CDATA				#REQUIRED
+	PORT			CDATA				#REQUIRED
+	SEGMENT			CDATA				#REQUIRED
+	REPLICA			CDATA				#REQUIRED
+>
+
+<!--
+AGGR_ENE_SERVER_STATUS
+-->
+<!ELEMENT AGGR_ENE_SERVER_STATUS (ERROR_LOG?,STATS?)>
+<!ATTLIST AGGR_ENE_SERVER_STATUS
+	STATUS			(
+				RUNNING |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+	HOST			CDATA				#REQUIRED
+	PORT			CDATA				#REQUIRED
+	SEGMENT			CDATA				#REQUIRED
+	REPLICA			CDATA				#REQUIRED
+>
+
+<!ELEMENT ERROR_LOG (#PCDATA)>
+<!ELEMENT STATS (#PCDATA)>
+
+<!--
+LOG_SERVER_STATUS
+-->
+<!ELEMENT LOG_SERVER_STATUS (STATS?)>
+<!ATTLIST LOG_SERVER_STATUS
+	STATUS			(
+				RUNNING |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+	HOST			CDATA				#REQUIRED
+	PORT			CDATA				#REQUIRED
+>
+
+<!--
+CRAWLER_STATUS
+-->
+<!ELEMENT CRAWLER_STATUS (STATS?)>
+<!ATTLIST CRAWLER_STATUS
+	STATUS			(
+				PENDING |
+				RUNNING |
+				FAILED |
+				STOPPED
+				)				#REQUIRED
+	HOST			CDATA				#REQUIRED
+	PORT			CDATA				#REQUIRED
+>
+
+<!--
+REPORTING_STATUS
+-->
+<!ELEMENT REPORTING_STATUS (ERROR_LOG?)>
+<!ATTLIST REPORTING_STATUS
+	NUM_RUNNING		CDATA		#REQUIRED
+	NUM_QUEUED		CDATA		#REQUIRED
+	HOST                    CDATA           #REQUIRED
+	STATUS                  CDATA           #REQUIRED
+>
+
+
+<!-- 
+********************************************************* 
+********************************************************* 
+-->
+
+
+<!-- REPORT_CONFIG is the data for get/setReportConfig. -->
+
+<!ELEMENT REPORT_CONFIG EMPTY>
+
+<!ATTLIST REPORT_CONFIG
+    RUN_DAILY_REPORTS         (TRUE | FALSE)      "FALSE"
+    RUN_WEEKLY_REPORTS        (TRUE | FALSE)      "FALSE"
+    FIRST_DAY_OF_WEEK         CDATA           #REQUIRED
+    RG_MEMORY_SETTING         CDATA           #REQUIRED
+>

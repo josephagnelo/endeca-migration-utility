@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="DVAL_STATE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="STATE"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="STATE">
+    <xs:complexType>
+      <xs:attribute name="ID" use="required"/>
+      <xs:attribute name="PATH" use="required"/>
+      <xs:attribute name="DIM" use="required"/>
+      <xs:attribute name="SOURCEID" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

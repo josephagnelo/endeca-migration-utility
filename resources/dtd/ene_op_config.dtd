@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT ENE_OP_CONFIG (COMMENT?, CACHE_CONFIGURATION?)>
+<!ATTLIST ENE_OP_CONFIG
+	PORT			CDATA			#IMPLIED
+	STAT_PORT		CDATA			#IMPLIED
+	FORK			(TRUE | FALSE)		#IMPLIED
+	NUM_THREADS		CDATA			#IMPLIED
+	CACHE_NAVRESULTS	(TRUE | FALSE)		#IMPLIED
+	USE_SYSTEM_LOG		(TRUE | FALSE)		#IMPLIED
+	PID_FILE		CDATA			#IMPLIED
+	OUT_FILE		CDATA			#IMPLIED
+	LOG_FILE		CDATA			#IMPLIED
+	TMP_DIR			CDATA			#IMPLIED
+	UPDATE_DIR		CDATA			#IMPLIED
+	CMDLINE_OPTIONS		CDATA			#IMPLIED
+>
+
+<!ELEMENT CACHE_CONFIGURATION EMPTY>
+<!ATTLIST CACHE_CONFIGURATION
+	MAX_MEM			CDATA			#IMPLIED
+	MAX_ENTRIES		CDATA			#IMPLIED
+	INSERT_THRESHOLD_TIME	CDATA			#IMPLIED
+>

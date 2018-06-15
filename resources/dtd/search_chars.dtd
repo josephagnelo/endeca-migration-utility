@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT SEARCH_CHARS (COMMENT?, SEARCH_CHAR*)>
+
+<!--
+	The SEARCH_CHAR element specifies a character that should be
+	considered as a search character, instead of as punctuation.
+	For example to allow searching on 'C++', you would specify:
+
+	<SEARCH_CHAR>+</SEARCH_CHAR>
+
+-->
+<!ELEMENT SEARCH_CHAR (#PCDATA)>

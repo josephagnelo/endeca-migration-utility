@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % merchstyles.dtd SYSTEM "merchstyles.dtd">
+%merchstyles.dtd;
+
+<!ELEMENT MERCHZONES (COMMENT?, ZONE*)>
+
+<!--
+	A zone is made of multiple rules.  Refer to the Endeca Documentation
+	for more information on this element.
+
+-->
+<!ELEMENT ZONE (UNIQ_REC_SPEC?, STYLENAME*)>
+<!ATTLIST ZONE
+	NAME				CDATA			#REQUIRED
+	RULE_SUPPRESS_THRESH		CDATA			#IMPLIED
+	SHUFFLE_RULES			(TRUE | FALSE)		"FALSE"
+	VALID_FOR_SEARCH		(TRUE | FALSE)		"TRUE"
+	DEFAULTSTYLE			CDATA			#IMPLIED
+>
+
+<!ELEMENT UNIQ_REC_SPEC (DVAL_ID?)>
+<!ATTLIST UNIQ_REC_SPEC
+	PROPNAME			CDATA			#IMPLIED
+>

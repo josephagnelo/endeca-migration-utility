@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT THESAURUS (COMMENT?, THESAURUS_ENTRY*, THESAURUS_ENTRY_ONEWAY*)>
+
+<!--
+	The THESAURUS_ENTRY element indicates a set of forms (THESAURUS_FORM
+	elements) that are all equivalent.  A search for any of these
+	forms (including stemming-matched versions) returns hits for all
+	of the forms.
+
+-->
+<!ELEMENT THESAURUS_ENTRY (THESAURUS_FORM+)>
+<!ELEMENT THESAURUS_FORM (#PCDATA)>
+
+<!--
+	THESAURUS_ENTRY_ONEWAY elements specify single-direction
+	mappings. Searches for any of the "from" forms (THESAURUS_FORM_FROM
+	elements) also return hits for all of the "to" forms
+	(THESAURUS_FORM_TO elements). But the other direction isn't enabled
+	- searches for the "to" forms do not return results for either the
+	"from" forms or the other "to" forms.
+
+-->
+<!ELEMENT THESAURUS_ENTRY_ONEWAY (THESAURUS_FORM_FROM, THESAURUS_FORM_TO+)>
+<!ELEMENT THESAURUS_FORM_FROM (#PCDATA)>
+<!ELEMENT THESAURUS_FORM_TO (#PCDATA)>

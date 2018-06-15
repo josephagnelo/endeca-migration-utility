@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!-- root element: -->
+
+<!ELEMENT KEY_RING (CA_DB?, PROXY*, SITE*, EXCHANGE_SERVER*)>
+
+<!-- CA Database entities - use ths to specify a file
+     containing Certificate Authority certificates -->
+
+<!ELEMENT CA_DB (#PCDATA)>
+
+<!-- PROXY Authentication configuration -->
+
+<!ELEMENT PROXY (KEY)>
+<!ATTLIST PROXY
+	HOST CDATA #REQUIRED
+	PORT CDATA #REQUIRED
+>
+
+<!-- Authentication configuration for a particular site -->
+
+<!ELEMENT SITE (HTTP?, HTTPS?)>
+<!ATTLIST SITE
+	HOST CDATA #REQUIRED
+	PORT CDATA #IMPLIED
+>
+
+<!-- Exchange server authentication configuration -->
+
+<!ELEMENT EXCHANGE_SERVER (KEY)>
+<!ATTLIST EXCHANGE_SERVER
+  HOST CDATA #REQUIRED
+>
+
+<!-- HTTP -->
+
+<!ELEMENT HTTP (REALM+)>
+
+<!-- HTTPS -->
+
+<!ELEMENT HTTPS (CERT?)>
+<!ATTLIST HTTPS
+	AUTHENTICATE_HOST (TRUE | FALSE) "TRUE"
+>
+
+<!-- Security realm configuration: -->
+
+<!ELEMENT REALM (KEY)>
+<!ATTLIST REALM
+	NAME CDATA #REQUIRED
+>
+
+<!-- Certificate -->
+
+<!ELEMENT CERT (KEY)>
+<!ATTLIST CERT
+	PATH					CDATA		#REQUIRED
+	PRIV_KEY_PATH	CDATA		#REQUIRED
+>
+
+<!-- key (username and password pair) -->
+
+<!ELEMENT KEY (#PCDATA)>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT MERCHSTYLES (COMMENT?, STYLE*)>
+
+<!--
+	Refer to the Endeca Documentation for more information on this
+	element.
+
+-->
+<!ELEMENT STYLE (PROPERTY_TEMPLATE*) >
+<!ATTLIST STYLE
+	NAME				CDATA			#REQUIRED
+	TITLE				CDATA			#IMPLIED
+	MAX_RECS			CDATA			#REQUIRED
+	MIN_RECS			CDATA			#REQUIRED
+	ALLOW_ADD_PROPS		(TRUE | FALSE)	"TRUE"
+>
+
+<!ELEMENT PROPERTY_TEMPLATE EMPTY >
+<!ATTLIST PROPERTY_TEMPLATE
+	NAME				CDATA			#REQUIRED
+>
+
+<!ELEMENT STYLENAME (#PCDATA)>

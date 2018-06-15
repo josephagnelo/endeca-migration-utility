@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright 2009 Endeca Technologies, Inc. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % word_forms_collection.dtd SYSTEM "word_forms_collection.dtd">
+%word_forms_collection.dtd;
+
+<!--
+	The WORD_FORMS_COLLECTION_UPDATES element includes a collection of word
+	forms to add and remove from a word forms collection. Removes will be
+	processed before adds.
+
+-->
+<!ELEMENT WORD_FORMS_COLLECTION_UPDATES (COMMENT?, REMOVE_WORD_FORMS_KEYS?, ADD_WORD_FORMS?)>
+
+<!--
+	The REMOVE_WORD_FORMS_KEYS element contains a list of WORD_FORM
+	entries. Each entry is a key into a WORD_FORMS list from the original
+	collection. A match from a key to any WORD_FORM in a WORD_FORMS list
+	will result in the removal of the entire WORD_FORMS from the original
+	collection.
+
+-->
+<!ELEMENT REMOVE_WORD_FORMS_KEYS (COMMENT?, WORD_FORM+)>
+
+<!--
+	The ADD_WORD_FORMS element contains a word forms collection to add
+	to the original collection.
+
+-->
+<!ELEMENT ADD_WORD_FORMS (COMMENT?, WORD_FORMS_COLLECTION)>
+

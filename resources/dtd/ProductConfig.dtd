@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--	Copyright (c) 2001-2004, Endeca Technologies, Inc.
+	All rights reserved. -->
+
+<!--	The PRODUCT_CONFIG top-level element is the container for
+	all feature configuration settings (FEATURE elements).
+	It also contains attributes indicating the NAME and VERSION
+	of the product. -->
+<!ELEMENT PRODUCT_CONFIG (FEATURE*)>
+<!ATTLIST PRODUCT_CONFIG
+	NAME		CDATA		#REQUIRED
+	VERSION		CDATA		#REQUIRED
+>
+
+<!--	Each FEATURE element determines whether or not the product
+	feature specified by the NAME attribute is enabled in the
+	current product. Some features may require a FEATURE_KEY
+	sub-element to be activated. -->
+<!ELEMENT FEATURE (FEATURE_KEY?)>
+<!ATTLIST FEATURE
+	NAME		CDATA		#REQUIRED
+	ENABLE		(TRUE | FALSE) "FALSE"
+>
+
+<!--	The optional FEATURE_KEY sub-element of the FEATURE element
+	provides key information needed to un-lock its associated
+	feature. -->
+<!ELEMENT FEATURE_KEY (#PCDATA)>

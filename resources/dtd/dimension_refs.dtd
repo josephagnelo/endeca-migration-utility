@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT DIMENSION_REFS (COMMENT?, DIMENSION_REF*)>
+
+<!--
+	The DIMENSION_REF element describes the various attributes of a
+	dimension.
+
+	TYPE				(PRIMARY | SECONDARY)	#REQUIRED
+
+	The TYPE attribute specifies whether this dimension is a
+	primary dimension or a secondary dimension.  Refer to the Endeca
+	Documentation for a more detailed description.
+
+	HIDDEN				(TRUE | FALSE)		"FALSE"
+
+	If the HIDDEN attribute is set to TRUE, then dvals from this
+	dimension will never be considered for refinement computation.
+
+	MULTI				(OR | AND)		#IMPLIED
+
+	MULTI specifies that this dimension should provide multi-select
+	support.  OR implies disjunctive multi-select, while AND results
+	in conjunctive multi-select.
+
+-->
+<!ELEMENT DIMENSION_REF EMPTY>
+<!ATTLIST DIMENSION_REF
+	NAME				CDATA			#REQUIRED
+	TYPE				(PRIMARY | SECONDARY)	#REQUIRED
+	HIDDEN				(TRUE | FALSE)		"FALSE"
+	MULTI				(OR | AND)		#IMPLIED
+>

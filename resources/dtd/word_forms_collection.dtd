@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT WORD_FORMS_COLLECTION (COMMENT?, WORD_FORMS*)>
+
+<!--
+	The WORD_FORMS element includes a list of words that are all
+	considered equivalent.  For example,
+
+	<WORD_FORMS>
+		<WORD_FORM>shoe</WORD_FORM>
+		<WORD_FORM>shoes</WORD_FORM>
+	</WORD_FORMS>
+
+	means that 'shoe' and 'shoes' should be considered equivalent.
+	For more information on word forms and stemming, refer to Endeca
+	Documentation.
+
+-->
+<!ELEMENT WORD_FORMS (WORD_FORM+)>
+<!ELEMENT WORD_FORM (#PCDATA)>

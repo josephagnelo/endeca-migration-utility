@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+FilterLiteral
+This entity represents the set of literal values allowed in the filter
+expression grammar. Currently we support property values and dimension
+values (specified either by id or by full path). A record satisfies a
+property value literal iff it includes an assignment matching the literal
+exactly (key and value). A record satisfies a dimension value literal iff it
+includes a dimension value that is equal to or a descendent of the literal.
+-->
+<!ENTITY % FilterLiteral   "PROP | DVAL_ID | DVAL_PATH">
+
+<!--
+FilterExpr
+This entity represents the set of expressions supported by the filter grammar.
+Currently we support the basic Boolean operators (AND, OR, NOT) and composition
+of filters.
+-->
+<!ENTITY % FilterExpr      "FILTER_AND | FILTER_OR | FILTER_NOT | FILTER_NAME">
+
+<!--
+FILTER
+This is the top level containing element. A filter is basically either
+a filter expression (currently either AND, OR, NOT, or a reference to
+another filter) or a literal (currently either a property+value pair
+or a dimension value).
+-->
+<!ELEMENT FILTER	( %FilterExpr | %FilterLiteral )>
+<!ATTLIST FILTER
+	NAME	CDATA	#REQUIRED
+>
+
+<!--
+FILTER_AND, FILTER_OR
+These elements represent a conjunction or disjunction (respectively) of
+a list of one or more contained filter expressions or literals. We use
+a prefix-style notation and allow an arbitrary number of parameters
+to cut down on the verbosity of the syntax, wlog.
+-->
+<!ELEMENT FILTER_AND	( %FilterExpr | %FilterLiteral )+>
+<!ELEMENT FILTER_OR	( %FilterExpr | %FilterLiteral )+>
+
+<!--
+FILTER_NOT
+This is the standard Boolean unary negation operator, representing the
+inverse of a single contained expression or literal.
+-->
+<!ELEMENT FILTER_NOT	( %FilterExpr | %FilterLiteral )>
+
+<!--
+FILTER_NAME
+This element is the composition operator for filters, allowing the
+behavior of one filter to be incorporated by reference into the
+definition of another filter.
+-->
+<!ELEMENT FILTER_NAME	EMPTY>
+<!ATTLIST FILTER_NAME
+	NAME	CDATA	#REQUIRED
+>

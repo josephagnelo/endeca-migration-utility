@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT DERIVED_PROPS (COMMENT?, DERIVED_PROP*)>
+
+<!--
+	DERIVED_PROP should be used in conjunction with the ROLLUP attribute
+	in the PROP_REF/DIM_REF element.  The value of a derived property
+	during run-time is the result of applying the function FCN to
+	the DERIVE_FROM dimension or property.
+
+	Only the three attributes NAME, FCN, and DERIVE_FROM are supported
+	by the ENE indexer.
+
+	NAME				CDATA			#REQUIRED
+
+	NAME specifies the name of the derived property.
+
+	FCN				(MIN | MAX | SUM | AVG)	#REQUIRED
+
+	FCN refers to the function that this derived property computes.
+
+	DERIVE_FROM			CDATA			#REQUIRED
+
+	DERIVE_FROM should be the name of a property or dimension.
+
+-->
+<!ELEMENT DERIVED_PROP EMPTY>
+<!ATTLIST DERIVED_PROP
+	NAME				CDATA			#REQUIRED
+	FCN				(MIN | MAX | SUM | AVG)	#REQUIRED
+	DERIVE_FROM			CDATA			#REQUIRED
+>

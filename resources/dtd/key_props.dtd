@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+
+<!-- The KEY_PROPS top level element is the container for a set of
+     KEY_PROP elements, each of which contains the "key properties" for
+     a single dimension or property key.
+-->
+<!ELEMENT KEY_PROPS (COMMENT?, KEY_PROP*)>
+
+
+<!-- A KEY_PROP element contains the list of property values associated
+     with the dimension or property key specified by the NAME attribute.
+-->
+<!ELEMENT KEY_PROP (PROP*)>
+<!ATTLIST KEY_PROP
+	NAME				CDATA			#REQUIRED
+>

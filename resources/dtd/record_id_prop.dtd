@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+	The RECORD_ID_PROP element specifies that the contained property
+	should be used as the record id to identify records.  If a property
+	is to be used as a record id, it must fulfill the following
+	criteria:
+
+	1) 32-bit unsigned integer
+	2) Every record must have exactly one assignment of this property
+	3) The value of this property must be unique for each record
+	4) That no more than one property is marked with RECORD_ID="TRUE"
+-->
+<!ELEMENT RECORD_ID_PROP (COMMENT?, PROPNAME?)>

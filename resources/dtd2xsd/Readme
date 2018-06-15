@@ -1,0 +1,16 @@
+perl dtd2xsd.pl [-alias] [-prefix p] [-ns n] [file]
+  -alias
+    enables special aliases (default off)
+  -prefix t
+    specify namespace prefix
+  -ns http://www.w3.org/namespace/
+    specify namespace URI
+  -simpletype pattern base
+    treat parameter entities whose name match this pattern
+    as simple datatypes derived from this base type
+  -attrgroup pattern
+    treat parameter entities whose name match this pattern
+    as attribute groups
+  -modelgroup pattern
+    treat parameter entities whose name match this pattern
+    as model groups

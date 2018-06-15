@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT PROP_REFS (COMMENT?, PROP_REF*)>
+
+<!--
+	The PROP_REF element describes the various attributes of a property
+	and also specifies how the values from the property should be
+	interpreted and indexed.
+
+	NAME				CDATA			#REQUIRED
+
+	The NAME attribute specifies the name of the property.
+
+	TYPE				(ALPHA
+					| INTEGER
+					| DOUBLE
+					| FIXEDPOINT
+					| FILE_PATH
+					| ENCODED_FILE_PATH)	#REQUIRED
+
+	The TYPE attribute specifies the property type.  See the Endeca
+	documentation for more details on each TYPE.
+
+  The OFFLINE_THRESHOLD attribute controls which strings are stored
+  offline.  Strings in the property longer than the threshold will
+  be stored offline, those shorter will be stored in the dgraph's
+  address space.  The attribute only applies to properties whose
+  TYPE is ALPHA.
+
+  The INVERTIBLE attribute determines whether the property model is invertible or not 
+  for purposes of range filtering (and perhaps other uses in the future)
+-->
+<!ELEMENT PROP_REF EMPTY>
+<!ATTLIST PROP_REF
+	NAME				CDATA			#REQUIRED
+	TYPE				(ALPHA
+					| INTEGER
+					| DOUBLE
+					| FIXEDPOINT
+					| FILE_PATH
+					| GEOCODE
+					| DATETIME
+					| DURATION
+					| TIME)	#REQUIRED
+    OFFLINE_THRESHOLD   CDATA       #IMPLIED
+    INVERTIBLE (TRUE | FALSE)       #IMPLIED
+>

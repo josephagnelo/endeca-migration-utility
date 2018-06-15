@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % search_interface.dtd SYSTEM "search_interface.dtd">
+%search_interface.dtd;
+
+<!--
+	FILTER_FOR_ANCESTORS		(TRUE | FALSE)		"FALSE"
+
+	If FILTER_FOR_ANCESTORS is set to TRUE, the results of a dimension
+	search will return only the highest ancestor dval (e.g. if both
+	'red zinfandel' and 'red wine' match a search query for 'red'
+	and FILTER_ANCESTORS is set to true, only the 'red wine' dval
+	will be returned.  If it is set to FALSE, then both dvals will
+	be returned).  The default value is FALSE.
+
+	SEARCH_INERT_DVALS		(TRUE | FALSE)		"FALSE"
+
+	If SEARCH_INERT_DVALS is set to TRUE, then certain non-navigable
+	dvals, such as dimension roots, are also returned as the result
+	of a dimension search query.  The default value is FALSE.
+-->
+<!ELEMENT DIMSEARCH_CONFIG (COMMENT?, PARTIAL_MATCH?,
+				AUTO_SUGGEST?)>
+<!ATTLIST DIMSEARCH_CONFIG
+	FILTER_FOR_ANCESTORS		(TRUE | FALSE)		"FALSE"
+	SEARCH_INERT_DVALS		(TRUE | FALSE)		"FALSE"
+	RELRANK_STRATEGY		CDATA			#IMPLIED
+	RETURN_RELRANK_SCORE		(TRUE | FALSE)		"FALSE"
+	ENABLE_AUTO_SUGGEST		(TRUE | FALSE)		#IMPLIED
+>

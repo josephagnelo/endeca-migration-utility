@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT MERCH_RULES (COMMENT?, (MERCH_RULE* | MERCH_RULE_GROUP_REF*))>
+
+<!--
+	A rule is made of:
+	- a reference to a style
+	- a trigger, which is some combination of these optional
+	  items:
+		1. a set of dvals that constitute a nav. state
+		   (Note that if this is omitted, the
+                   trigger is treated as if there were an
+                   implicit <DVAL_ID ID="0"/> element.
+                   This becomes important if the INHERIT
+                   attribute of the MERCH_RULE_TRIGGER
+                   element is set to FALSE.),  
+		2. a set of keywords with match options, 
+		3. a personalization profile that describes 
+		   the types of end users this rule should fire for.
+	- a target (another collection of dvals that constitute a nav. state)
+		Note that if this is omitted, i.e. the 
+		<MERCH_RULE_TARGET> element is empty, 
+		the target is treated as if there were 
+		an implicit <DVAL_ID ID="0"/> element.
+	- an optional time trigger element. If present, this element specifies
+	  a time period when this merch rule is active.
+	- multiple sort rules and properties
+
+-->
+
+<!ELEMENT MERCH_RULE (MERCH_RULE_TRIGGER+, MERCH_RULE_TARGET, MERCH_RULE_TIME_TRIGGER?, PROFILE?,
+		(MERCH_RULE_SORT | PROP | RECORD_OVERRIDE)*)>
+<!ATTLIST MERCH_RULE
+	ID				CDATA			#REQUIRED
+	ZONE_NAME			CDATA			#IMPLIED
+	STYLE_NAME			CDATA			#IMPLIED
+	TITLE				CDATA			#REQUIRED
+	SHUFFLE_RECS			(TRUE | FALSE)		"FALSE"
+	SELF_PIVOT			(TRUE | FALSE)		"FALSE"
+>
+
+<!ELEMENT MERCH_RULE_GROUP_REF EMPTY>
+<!ATTLIST MERCH_RULE_GROUP_REF
+	%url;
+	IS_REDIRECT_GROUP			(TRUE | FALSE)		"FALSE"
+>
+
+
+<!--    
+        Include a distinct <RECORD_OVERRIDE> for *each*
+        featured record that you want to show up in the 
+        merch rule result set.  For example, if I wanted
+        two particular featured records in my result I 
+        would include the following two elements as 
+        children of my <MERCH_RULE> element:
+        
+            <RECORD_OVERRIDE>
+	        <PROP NAME="P_WineID">
+	            <PVAL>77026</PVAL>
+	        </PROP>
+	    </RECORD_OVERRIDE> 
+	 
+	    <RECORD_OVERRIDE>
+	        <PROP NAME="P_WineID">
+	            <PVAL>37521</PVAL>
+	        </PROP>
+            </RECORD_OVERRIDE>
+-->
+
+<!ELEMENT RECORD_OVERRIDE (PROP)>
+
+<!--
+	The MERCH_RULE_TRIGGER specifies a set of dval's that will trigger
+	the firing of a merchandising rule.  A trigger can include any
+	number of dvals and search queries (KEYWORDS).
+
+	ENABLE_THESAURUS		(TRUE | FALSE)		"TRUE"
+
+	The ENABLE_THESAURUS attribute specifies whether the thesaurus should
+	be engaged for the KEYWORDS' used.  The default value is TRUE.
+
+	ENABLE_STEMMING			(TRUE | FALSE)		"TRUE"
+
+	The ENABLE_STEMMING attribute specifies whether stemming (word
+	forms) should be engaged for the KEYWORDS' used.  The default
+	value is TRUE.
+
+	ENABLE_SPELLING			(TRUE | FALSE)		"TRUE"
+
+	The ENABLE_SPELLING attribute specifies whether spelling correction
+	should be engaged for the KEYWORDS' used.  The default value
+	is TRUE.
+
+-->
+<!ELEMENT MERCH_RULE_TRIGGER (DVAL_ID*, KEYWORDS?, PROFILE?)>
+<!ATTLIST MERCH_RULE_TRIGGER
+	INHERIT				(TRUE | FALSE)		"TRUE"
+>
+
+<!--
+
+	The data associated with the KEYWORDS element represents a word
+	or phrase that must be present in the user's search query for the
+	rule to fire. For example, consider the following trigger:
+
+	For example, consider the following trigger:
+
+	<MERCH_RULE_TRIGGER>
+		<DVAL_ID>1234</DVAL_ID>
+		<KEYWORDS>wine opener</KEYWORDS>
+	</MERCH_RULE_TRIGGER>
+
+	For the associated rule to fire, the user's query must contain
+	searches matching both the phrase "wine opener"	(along with the 
+	dimension values 1234). For example, the following queries would 
+	allow the rule to fire:
+
+		N=1234&Ntk=AllText&Ntt=red+wine+opener
+		N=1234&Ntk=Description|Color&Ntt=good+wine+opener|red
+
+	The following query would not fire the rule, since keywords
+	require phrase matching:
+
+		N=1234&Ntk=AllText&Ntt=opener+for+wine+that+is+red
+
+	The KEYWORDS element has an optional "KEY" attribute that can
+	be used to restrict the search key allowed to satisfy the trigger
+	(by default, KEYWORDS triggers are satisfied by a search against
+	any search key). For example, consider the following trigger:
+
+	<MERCH_RULE_TRIGGER>
+		<KEYWORDS KEY="Color">red</KEYWORDS>
+	</MERCH_RULE_TRIGGER>
+
+	The following query would allow this rule to fire, since the search is
+	against the required "Color" key:
+
+		N=0&Ntk=Color&Ntt=red+shirt
+
+	But the following query would not allow the rule to fire, since the search
+	is against the wrong key:
+
+		N=0&Ntk=AllText&Ntt=red+shirt
+ 
+-->
+<!ELEMENT KEYWORDS (#PCDATA)>
+<!ATTLIST KEYWORDS
+	KEY				CDATA			#IMPLIED
+	ENABLE_STEMMING			(TRUE | FALSE)		"TRUE"
+	ENABLE_SPELLING			(TRUE | FALSE)		"TRUE"
+	MODE				(MATCHPHRASE |
+					 MATCHEXACT |
+					 MATCHALL)		"MATCHPHRASE"
+>
+
+<!--
+	The <PROFILE> element  (defined in common.dtd)
+	can be used for personalizing 
+	the merch rule trigger.
+
+	For example,
+
+	<MERCH_RULE_TRIGGER>
+		<DVAL_ID>1234</DVAL_ID>
+		<KEYWORDS>wine opener</KEYWORDS>
+		<PROFILE>rich_guy</PROFILE>
+	</MERCH_RULE_TRIGGER>
+
+	For the associated rule to fire, the user's query must contain
+	searches matching both the phrase "wine opener" (along with the
+	dimension value 1234). Furthermore, the profiles that are set 
+	in the ENEQuery object MUST include "rich_guy" for the associated 
+	rule to fire.
+
+-->
+
+
+<!ELEMENT MERCH_RULE_TARGET (DVAL_ID*)>
+<!ATTLIST MERCH_RULE_TARGET
+	AUGMENT_NAV_STATE		(TRUE | FALSE)		"TRUE"
+>
+
+<!--
+	The <MERCH_RULE_TIME_TRIGGER> element is used to specify
+	a time period when a rule is active. If this element is
+	absent from a rule definition, then the rule is always active.
+	
+	If the element is present then the time specified by its START_TIMESTAMP
+	is the start of the time period when the rule is active.
+	If the EXPIRY_TIMESTAMP exists, then it specifies when the
+	rule stops being active. If it does not exist, then
+	the rule is active indefinitely after its start time.
+	
+	The EXPIRY_TIMESTAMP and START_TIMESTAMP attributes should be
+	date/times of the format
+	
+		MM/DD/YYYY HH:MM
+-->
+
+<!ELEMENT MERCH_RULE_TIME_TRIGGER EMPTY>
+<!ATTLIST MERCH_RULE_TIME_TRIGGER
+	START_TIMESTAMP CDATA #REQUIRED
+	EXPIRY_TIMESTAMP CDATA #IMPLIED
+>
+
+<!ELEMENT MERCH_RULE_SORT EMPTY>
+<!ATTLIST MERCH_RULE_SORT
+	KEY				CDATA			#REQUIRED
+	ORDER				(ASC | DESC)		"ASC"
+	WEIGHT				CDATA			#IMPLIED
+>

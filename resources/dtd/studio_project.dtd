@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+
+<!--
+    common.dtd contains the entities:
+        DVAL_ID, COMMENT, CONFIG, INFO, RECORD_ID
+        LOG, DIMENSION_ID, PROP, PVAL
+-->
+
+%common.dtd;
+
+<!ENTITY % url
+	"URL			CDATA		#REQUIRED"
+>
+
+<!--
+    STUDIO_PROJECT - Points to the pipeline and nav. config that constitute
+                     this project.
+
+    PROJECT_RESOURCE_CONFIG has been deprecated (>=4.5) and will be ignored
+    by DevStudio.
+-->
+
+<!ELEMENT STUDIO_PROJECT (COMMENT?
+    , PROJECT_MANAGER_CONFIG?
+    , PROJECT_RESOURCE_CONFIG?
+    , PROJECT_PIPELINE+
+    , PROJECT_NAV_CONFIG?
+    , PROJECT_FILE*)>
+
+<!ATTLIST STUDIO_PROJECT
+	NAME			CDATA		#REQUIRED
+	VERSION		CDATA		#IMPLIED
+	APP_VERSION		CDATA		#IMPLIED
+	TYPE      CDATA		#IMPLIED
+>
+
+<!--
+    PROJECT_MANAGER_CONFIG - The Endeca manager url and port
+-->
+<!ELEMENT PROJECT_MANAGER_CONFIG EMPTY>
+<!ATTLIST PROJECT_MANAGER_CONFIG %url;
+          PORT CDATA #REQUIRED
+          APPLICATION CDATA #IMPLIED
+          FORGE_OP_CONFIG CDATA #IMPLIED
+          ENE_OP_CONFIG CDATA #IMPLIED
+          AENE_OP_CONFIG CDATA #IMPLIED
+          INDEXER_OP_CONFIG CDATA #IMPLIED
+>
+
+<!--
+    PROJECT_RESOURCE_CONFIG - The name of the resource config file.
+-->
+<!ELEMENT PROJECT_RESOURCE_CONFIG EMPTY>
+<!ATTLIST PROJECT_RESOURCE_CONFIG %url;>
+
+<!--
+    PROJECT_PIPELINE - The name of the pipeline file.
+-->
+<!ELEMENT PROJECT_PIPELINE EMPTY>
+<!ATTLIST PROJECT_PIPELINE %url;
+          TYPE CDATA #IMPLIED
+>
+
+<!--
+    PROJECT_NAV_CONFIG - The name of the nav config file.
+-->
+<!ELEMENT PROJECT_NAV_CONFIG EMPTY>
+<!ATTLIST PROJECT_NAV_CONFIG %url;>
+
+<!-- 
+    PROJECT_FILE
+-->
+<!ELEMENT PROJECT_FILE EMPTY>
+<!ATTLIST PROJECT_FILE 
+	TYPE CDATA #REQUIRED
+	%url;
+	HIGHEST_ID CDATA #IMPLIED>

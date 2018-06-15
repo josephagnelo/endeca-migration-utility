@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % searchindex.dtd SYSTEM "searchindex.dtd">
+%searchindex.dtd;
+
+<!--
+	INMEM_INDEX_THRESHOLD		CDATA			#IMPLIED
+
+	The INMEM_INDEX_THRESHOLD attribute specifies the maximum text size
+	(in MB) for which text indexing will be done entirely in memory.
+	If the text size is larger than this threshold, then temporary
+	files on disk will be used.
+
+	MAX_NGRAM_LENGTH		CDATA			#IMPLIED
+
+	The MAX_NGRAM_LENGTH attribute specifies the maximum ngram length
+	that should be indexed.  All substrings of this length or shorter
+	will be indexed.  Thus, if a user does a wildcard search with
+	a string that is less than or equal to this length, then exact
+	results can returned directly from the index.  If the wildcard
+	search includes a substring longer than this length, then the
+	results returned from the index will be post-processed so that
+	false-positives are eliminated.
+
+	DICTIONARY_WILDCARD		(TRUE | FALSE)		#IMPLIED
+
+	The DICTIONARY_WILDCARD attribute specifies whether a wildcard
+	index should be generated for the dictionary of words for the text
+	collection containing this element.  The default value of this
+	attribute is TRUE when the containing element consists of 'offline'
+	documents and FALSE otherwise.
+
+	DICTIONARY_MAX_NGRAM_LENGTH	CDATA			#IMPLIED
+
+	The DICTIONARY_MAX_NGRAM_LENGTH attribute specifies the maximum
+	ngram length that should be indexed in the dictionary wildcard index.
+
+	MIN_WORD_OCCURRENCES		CDATA			#IMPLIED
+
+	The MIN_WORD_OCCURRENCES attribute specifies the minimum number
+	of times a word must occur for it to be put into the spelling
+	correction dictionary.
+
+	MIN_WORD_LENGTH			CDATA			#IMPLIED
+
+	The MIN_WORD_LENGTH attribute specifies the minimum number of
+	a characters that a word must contain for it to be put into the
+	spelling correction dictionary.  By default, all words are put
+	into the dictionary.
+
+	MAX_WORD_LENGTH			CDATA			#IMPLIED
+
+	The MAX_WORD_LENGTH attribute specifies the maximum number of
+	a characters that a word may contain for it to be put into the
+	spelling correction dictionary.  By default, all words are put
+	into the dictionary.
+-->
+<!ELEMENT DIMSEARCH_INDEX (COMMENT?, SEARCH_INDEX, DIMSEARCH_HIERARCHY*)>
+<!ATTLIST DIMSEARCH_INDEX
+	COMPOUND			(TRUE|FALSE)		"FALSE"
+	INMEM_INDEX_THRESHOLD		CDATA			#IMPLIED
+	MAX_NGRAM_LENGTH		CDATA			#IMPLIED
+	DICTIONARY_WILDCARD		(TRUE | FALSE)		#IMPLIED
+	DICTIONARY_MAX_NGRAM_LENGTH	CDATA			#IMPLIED
+	MIN_WORD_OCCURRENCES		CDATA			#IMPLIED
+	MIN_WORD_LENGTH			CDATA			#IMPLIED
+	MAX_WORD_LENGTH			CDATA			#IMPLIED
+>
+
+<!ELEMENT DIMSEARCH_HIERARCHY EMPTY>
+<!ATTLIST DIMSEARCH_HIERARCHY
+	NAME				CDATA			#REQUIRED
+>

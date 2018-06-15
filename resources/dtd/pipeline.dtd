@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+<!--
+    common.dtd contains the entities:
+        DVAL_ID, COMMENT, CONFIG, INFO, RECORD_ID
+        LOG, DIMENSION_ID, PROP, PVAL
+-->
+%common.dtd;
+
+<!-- ____________________________________________________________
+
+    PIPELINE - Containing element for a pipeline.
+
+    Since the pipeline can contain components in any order, the entire
+    PIPELINE content dimension is a repeatable sequence. This causes the
+    component modifiers (*, +, ?, etc.) to be ignored by DTD
+    validation. The modifiers are still specified to indicate the
+    intent (which should be validated by the application)
+
+____________________________________________________________ -->
+<!ELEMENT PIPELINE
+    ( COMMENT?
+    | LOG*
+    | ID_SERVER
+    | RECORD_ADAPTER+
+    | RECORD_CACHE*
+    | RECORD_ASSEMBLER*
+    | RECORD_MANIPULATOR+
+    | PROP_MAPPER+
+    | PERL_MANIPULATOR+
+    |JAVA_MANIPULATOR+
+    | DIMENSION_ADAPTER+
+    | DIMENSION_SERVER
+    | INDEXER_ADAPTER
+    | UPDATE_ADAPTER
+    | NAV_CONFIG_ADAPTER*
+    | NAV_CONFIG_SERVER*
+    | SPIDER*
+    )+
+>
+<!ATTLIST PIPELINE
+    NAME        CDATA       #REQUIRED
+>
+
+<!-- ____________________________________________________________
+
+    RECORD_SOURCE / DIMENSION_SOURCE - Pipeline Connections
+
+    Components in the pipeline are connected together by naming each
+    other as RECORD_SOURCEs or DIMENSION_SOURCEs.
+
+____________________________________________________________ -->
+<!ELEMENT RECORD_SOURCE (#PCDATA)>
+<!ELEMENT DIMENSION_SOURCE (#PCDATA)>
+<!ELEMENT NAV_CONFIG_SOURCE (#PCDATA)>
+
+<!-- ____________________________________________________________
+
+    ID_SERVER - ID Server
+
+____________________________________________________________ -->
+<!ELEMENT ID_SERVER EMPTY>
+<!ATTLIST ID_SERVER
+    URL         CDATA       #REQUIRED
+    FORMAT          CDATA       #REQUIRED
+    REQUIRE_DATA        (TRUE | FALSE)  "FALSE"
+>
+
+<!-- ____________________________________________________________
+
+    PROP_DECL - A property declaration or hint
+
+    Property declarations are currently ignored by forge, but 
+    are used by the Data Foundry Studio to provide validation:
+    Only properties that are in "scope" are valid to be referenced
+    by expressions, etc.
+
+    The declaration refers to the scope of the property NAME, so if
+    a property is renamed, the old name would have a DELETE specified
+    (which takes effect at the end of the component) and the new
+    name would have an ADD specified (which takes effect at the begining
+    of the component. 
+
+    To start, only RECORD_ADAPTER and RECORD_MANIPULATOR elements
+    will have PROP_DECLS, but this will be expanded to most or all
+    RECORD_* elements.
+
+____________________________________________________________ -->
+
+<!ELEMENT PROP_DECL EMPTY>
+<!ATTLIST PROP_DECL
+    NAME        CDATA            #REQUIRED
+    ADD         (FALSE | TRUE)   #IMPLIED
+    DELETE      (FALSE | TRUE)   #IMPLIED
+    CHANGE      (FALSE | TRUE)   #IMPLIED
+>
+
+
+<!-- ____________________________________________________________
+
+    RECORD_ADAPTER - Get Records into / out of the pipeline.
+
+    Format-specific configuration is set in the pass-through
+    element.
+
+____________________________________________________________ -->
+<!ELEMENT RECORD_ADAPTER
+    ( COMMENT?
+    , RECORD_SOURCE?
+    , DIMENSION_SOURCE?
+    , NAV_CONFIG_SOURCE?
+    , RECORD_INDEX?
+    , RECORD_GROUP?
+    , TRANSFORMER?
+    , PASS_THROUGH*
+    , PROP_DECL*
+    )
+>
+
+<!ATTLIST RECORD_ADAPTER
+    NAME                CDATA                                                       #REQUIRED
+    FRC_PVAL_IDX        (TRUE | FALSE)                                  "TRUE"
+    DIRECTION           (INPUT | OUTPUT)                                #REQUIRED
+    URL                 CDATA                                                       #IMPLIED
+        STATE                               (TRUE | FALSE)                                  #IMPLIED
+    PREFIX              CDATA                                                       #IMPLIED 
+    COL_DELIMITER       CDATA                                                       #IMPLIED
+    ROW_DELIMITER       CDATA                                                       #IMPLIED
+    REC_DELIMITER       CDATA                                                       #IMPLIED
+    FORMAT              CDATA                                                       #REQUIRED
+    ENCODING            CDATA                                                       #IMPLIED
+    REQUIRE_DATA        (TRUE | FALSE)                                  #IMPLIED
+    FILTER_EMPTY_PROPS  (TRUE | FALSE)                                  #IMPLIED
+    MULTI               (TRUE | FALSE)                                  #IMPLIED
+    MULTI_PROP_NAME         CDATA                                                       #IMPLIED
+    JAVA_HOME           CDATA                                           #IMPLIED
+    JAVA_CLASSPATH      CDATA                                           #IMPLIED
+    JAVA_CLASSNAME      CDATA                                           #IMPLIED
+    %compression;
+>
+
+<!ELEMENT PASS_THROUGH (#PCDATA)>
+<!ATTLIST PASS_THROUGH
+    NAME            CDATA       #REQUIRED
+>
+
+<!ELEMENT TRANSFORMER EMPTY>
+<!ATTLIST TRANSFORMER
+    TYPE            CDATA       #REQUIRED
+    URL             CDATA       #REQUIRED                 
+>
+
+<!-- ____________________________________________________________
+
+    DIMENSION_ADAPTER - Get dimensions into / out of the pipeline.
+
+    Format-specific configuration is set in the pass-through
+    element.
+
+____________________________________________________________ -->
+<!ELEMENT DIMENSION_ADAPTER
+    ( COMMENT?
+    , DIMENSION_SOURCE?
+    , TRANSFORMER?
+    , PASS_THROUGH*
+    )
+>
+<!ATTLIST DIMENSION_ADAPTER
+    NAME                CDATA                                                       #REQUIRED
+    DIRECTION           (INPUT | OUTPUT)                                #REQUIRED
+    URL                 CDATA                                                       #REQUIRED
+    COL_DELIMITER       CDATA                                                       #IMPLIED
+    ROW_DELIMITER       CDATA                                                       #IMPLIED
+    REC_DELIMITER       CDATA                                                       #IMPLIED
+    FORMAT              CDATA                                                       #REQUIRED
+    REQUIRE_DATA        (TRUE | FALSE)                                  #IMPLIED
+    %compression;
+>
+
+<!-- ___________________________________________________________
+
+    NAV_CONFIG_ADAPTER - Get NavConfig info in and out of the
+    pipeline.
+    ____________________________________________________________ -->
+<!ELEMENT NAV_CONFIG_ADAPTER
+    ( COMMENT?
+    , NAV_CONFIG_SOURCE?
+    )
+>
+<!ATTLIST NAV_CONFIG_ADAPTER
+    NAME                CDATA                   #REQUIRED
+    DIRECTION           (INPUT | OUTPUT)        #REQUIRED
+    FORMAT              CDATA                   #REQUIRED
+    URL                 CDATA                   #REQUIRED
+    MODE                (READ_WRITE | READ_ONLY)    "READ_WRITE"
+>
+
+<!-- ___________________________________________________________
+
+    NAV_CONFIG_SERVER - Merge NavConfig from multiple sources.
+    PRIMARY - the name of the "primary" source, i.e. the one
+    that user changes should be stored in.
+    ____________________________________________________________ -->
+<!ELEMENT NAV_CONFIG_SERVER
+    ( COMMENT?
+    , NAV_CONFIG_SOURCE+
+    )
+>
+<!ATTLIST NAV_CONFIG_SERVER
+    NAME        CDATA        #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    SPIDER - Adds Crawling features to pipeline.
+    _____________________________________________________________-->
+
+<!ELEMENT SPIDER
+    ( COMMENT?
+    , RECORD_SOURCE
+    , SPIDER_INIT?
+    , SPIDER_RECORD_PROC
+    )
+>
+<!ATTLIST SPIDER
+    NAME        CDATA   #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    SPIDER_INIT - Spider initialization
+    _____________________________________________________________-->
+
+<!ELEMENT SPIDER_INIT
+    ( MAX_HOPS?
+    , MAX_DEPTH?
+    , TIMEOUT?
+    , CONNECT_TIMEOUT?
+    , MIN_TRANSFER_RATE?
+    , IGNORE_ROBOTS.TXT?
+    , AGENT_NAME?
+    , DISABLE_COOKIES?
+    , DIFFERENTIAL_CRAWL?
+    , PROXY_CONFIG?
+    , ROOT_URL*
+    )
+>
+
+<!--_____________________________________________________________
+
+    MAX_HOPS - Limits depth of crawl to maximum number of hops from root.
+    Must be an integer > 0.  If no MAX_HOPS value is provided, the
+    maximum number of hops will be unlimited.
+    _____________________________________________________________-->
+
+<!ELEMENT MAX_HOPS EMPTY>
+<!ATTLIST MAX_HOPS
+    VALUE       CDATA   #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    MAX_DEPTH - Limits depth of crawl to maximum depth of URL path.
+    Must be an integer > 0.  If no MAX_DEPTH value is provided, the
+    maximum path depth will be unlimited.
+    _____________________________________________________________-->
+
+<!ELEMENT MAX_DEPTH EMPTY>
+<!ATTLIST MAX_DEPTH
+    VALUE       CDATA   #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    TIMEOUT - Maximum time in seconds the Spider should be allowed
+    to spend to fetch a URL.  The TIMEOUT parameter applies to the
+    entire scope of a fetch operation which includes both the time
+    spent negotiating a connection to the host as well as the time
+    spent transferring data to/from the host.  A value for the TIMEOUT
+    parameter must be chosen carefully as normal hostname lookups
+    can take considerable time and limiting operations to less than
+    a few minutes risk aborting perfectly normal operations. Value
+    must be an integer > 0.  
+    _____________________________________________________________-->
+    
+<!ELEMENT TIMEOUT EMPTY>
+<!ATTLIST TIMEOUT
+    VALUE       CDATA   #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    CONNECT_TIMEOUT - Maximum time in seconds the Spider should
+    wait for a connection to be made to a remote host when fetching
+    a URL.  Value specified must be an integer > 0.  If no 
+    CONNECT_TIMEOUT value is specified, the Spider will wait
+    indefinitely for a connection to be made unless the TIMEOUT 
+    parameter is set (see above) which governs the overall time 
+    of fetch operations.
+    _____________________________________________________________-->
+    
+<!ELEMENT CONNECT_TIMEOUT EMPTY>
+<!ATTLIST CONNECT_TIMEOUT
+    VALUE       CDATA   #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    MIN_TRANSFER_RATE - Specify a minimum transfer rate (MIN_RATE)
+    and a maximum time (MAX_TIME) to configure the Spider to abort
+    fetch operations if the actual transfer rate falls below 
+    MIN_RATE bytes/second for MAX_TIME seconds. 
+    
+        MIN_RATE: Minimum transfer rate in bytes/second. Value 
+                  specified must be an integer > 0.
+        
+        MAX_TIME: Maximum time in seconds that the Spider should 
+                  allow the actual transfer rate to be below 
+                  MIN_RATE before aborting the fetch operation. 
+                  Value specified must be an integer > 0.
+    _____________________________________________________________-->
+
+<!ELEMENT MIN_TRANSFER_RATE EMPTY>
+<!ATTLIST MIN_TRANSFER_RATE
+    MIN_RATE    CDATA   #REQUIRED
+    MAX_TIME    CDATA   #REQUIRED
+>
+
+<!--_____________________________________________________________
+
+    IGNORE_ROBOTS.TXT - Sets whether Spider adheres to the robots.txt
+    standard.  By default, the spider follows the standard and looks
+    for robots.txt.
+    _____________________________________________________________-->
+
+<!ELEMENT IGNORE_ROBOTS.TXT EMPTY>
+
+<!--_____________________________________________________________
+
+    AGENT_NAME - The `User-agent' http header field presented to 
+    web servers when retrieving URLs.  Also used as the name of this
+    Spider as it will be referred to in the `User-agent' field of 
+    a robots.txt file.  If no AGENT_NAME is provided and 
+    IGNORE_ROBOTS.TXT is `FALSE', the spider will only respond to 
+    commands in a robots.txt file where the value of the `User-agent' 
+    field is `*'.
+    _____________________________________________________________-->
+
+<!ELEMENT AGENT_NAME (#PCDATA)>
+
+<!--_____________________________________________________________
+
+    DISABLE_COOKIES - Turns cookies off.
+    _____________________________________________________________-->
+
+
+<!ELEMENT DISABLE_COOKIES EMPTY>
+
+<!--_____________________________________________________________
+
+    DIFFERENTIAL_CRAWL - Configures a spider to perform a
+        differential crawl.  The required URL attribute specifies
+        a file location to store the spider's state between forge
+        executions.  This file is read in at the beginning of a 
+        differential crawl to enqueue URLs from previous crawls
+        and may be updated during the crawl.  The DIFFERENTIAL_CRAWL
+        element is optional, when it is NOT present the spider 
+        does NOT perform a differntial crawl.
+    _____________________________________________________________-->
+
+<!ELEMENT DIFFERENTIAL_CRAWL EMPTY>
+<!ATTLIST DIFFERENTIAL_CRAWL
+    URL     CDATA   #REQUIRED
+>
+
+<!--___________________________________________________________
+    
+    PROXY_CONFIG - Configure Forge to fetch via proxy server(s) 
+    _____________________________________________________________-->
+
+<!ELEMENT PROXY_CONFIG
+    ( (PROXY | (PROXY_HTTP, PROXY_HTTPS))
+    , PROXY_BYPASS*
+    )
+>
+
+<!--___________________________________________________________
+    
+    PROXY - Specify a proxy server to use for all URLs (HTTP & HTTPS)
+    _____________________________________________________________-->
+    
+<!ELEMENT PROXY EMPTY>
+<!ATTLIST PROXY
+    HOST    CDATA   #REQUIRED
+    PORT    CDATA   #REQUIRED
+>
+
+<!--___________________________________________________________
+    
+    PROXY_HTTP - Specify a proxy server to use for HTTP URLs.
+    _____________________________________________________________-->
+
+<!ELEMENT PROXY_HTTP EMPTY>
+<!ATTLIST PROXY_HTTP
+    HOST    CDATA           #REQUIRED
+    PORT    CDATA           #REQUIRED
+>
+
+<!--___________________________________________________________
+    
+    PROXY_HTTPS - Specify a proxy server to use for HTTPS URLs.
+    _____________________________________________________________-->
+
+<!ELEMENT PROXY_HTTPS EMPTY>
+<!ATTLIST PROXY_HTTPS
+    HOST    CDATA           #REQUIRED
+    PORT    CDATA           #REQUIRED
+>
+
+<!--___________________________________________________________
+    
+    PROXY_BYPASS - Bypass proxy for URLs beginning with PROXY_BYPASS
+    _____________________________________________________________-->
+
+<!ELEMENT PROXY_BYPASS (#PCDATA)>
+
+<!--_____________________________________________________________
+
+    ROOT_URL - Spider root url
+    _____________________________________________________________-->
+
+<!ELEMENT ROOT_URL (#PCDATA)>
+
+<!--_____________________________________________________________
+
+    URL_FILTER - Spider url inclusion/exclusion filter
+    _____________________________________________________________-->
+
+<!ELEMENT URL_FILTER (#PCDATA)>
+<!ATTLIST URL_FILTER
+    TYPE        (HOST|URL)              #REQUIRED
+    ACTION      (INCLUDE|EXCLUDE)       #REQUIRED
+    PATTERN     (WILDCARD|REGEX)        "WILDCARD"
+>
+
+<!--_____________________________________________________________
+
+    SPIDER_REC_PROC - Spider Record Processing "expressions"
+    _____________________________________________________________-->
+
+<!ELEMENT SPIDER_RECORD_PROC
+    (ENQUEUE_URL*, URL_FILTER*)
+>
+
+<!--_____________________________________________________________
+
+    ENQUEUE_URL - Spider Enqueue URL "expression"
+    _____________________________________________________________-->
+
+<!ELEMENT ENQUEUE_URL EMPTY>
+<!ATTLIST ENQUEUE_URL
+    PROP_NAME   CDATA           #REQUIRED
+    REMOVE_PROP (TRUE|FALSE)    "FALSE"
+>
+
+<!-- ____________________________________________________________
+
+    DIMENSION_SERVER - Manage static & dynamic dimensions.
+
+    All classification should manipulate dimensions through a DIMENSION_SERVER
+    component. It will intercept requests for dimensions and (for the
+    DIMENSION_IDs specified) provide dimensions capable of auto-generating
+    dvals during a search.
+
+    FORMAT value XML has been deprecated in favor of INTERNAL_DIM_XML
+
+____________________________________________________________ -->
+<!ELEMENT DIMENSION_SERVER
+    ( COMMENT?
+    , DVAL_ID_LIMITS?
+    , DIMENSION_SOURCE+
+    , NAV_CONFIG_SOURCE?
+    )
+>
+<!ATTLIST DIMENSION_SERVER
+    NAME                CDATA           #REQUIRED
+    PERSIST_URL         CDATA           #IMPLIED
+    FORMAT              (XML | INTERNAL_DIM_XML | BINARY)  #IMPLIED
+    MATCH_COUNT_LOG CDATA       #IMPLIED
+    %compression;
+>
+
+<!-- ____________________________________________________________
+
+    DVAL_ID_LIMITS - upper and lower bounds constraining the DVAL ids 
+    to be assigned for DVALs created during autogen. This option replaces
+    the MIN_ID and MAX_ID attributes in the state file refered to by the
+    now-deprecated ID_SERVER pipeline element.
+____________________________________________________________ -->
+<!ELEMENT DVAL_ID_LIMITS
+   ( COMMENT?
+   )
+>
+
+<!ATTLIST DVAL_ID_LIMITS
+    MIN                CDATA           #REQUIRED
+    MAX                CDATA           #REQUIRED
+>
+
+<!-- ____________________________________________________________
+
+    RECORD_ASSEMBLER - Assemble (merge) records from multiple streams.
+
+____________________________________________________________ -->
+<!ELEMENT RECORD_ASSEMBLER
+    ( COMMENT?
+    , RECORD_SOURCE+
+    , DIMENSION_SOURCE?
+    , RECORD_INDEX?
+    , RECORD_JOIN
+    )
+>
+<!ATTLIST RECORD_ASSEMBLER
+    NAME                CDATA           #REQUIRED
+    FRC_PVAL_IDX        (TRUE | FALSE)  "TRUE"
+>
+
+<!-- Certain joins (e.g. "HISTORY") may take expressions that specifies
+     additional work to be done during the join -->
+<!ELEMENT RECORD_JOIN
+    ( CONFIG*
+    , JOIN_ENTRY+
+    , WORK_ENTRY?
+    )
+>
+<!ATTLIST RECORD_JOIN
+    JOIN_TYPE CDATA #REQUIRED
+>
+
+<!ELEMENT JOIN_ENTRY
+    ( RECORD_SOURCE
+    , KEY_DIMENSION*
+    )
+>
+
+<!ELEMENT WORK_ENTRY ((RECORD_REMOVE | RECORD_UPDATE)+)
+>
+
+<!-- RECORD_REMOVE describes when to remove records based on the "age"
+     of the records. Records older than the age specified are removed.
+-->
+<!ELEMENT RECORD_REMOVE (TRIGGER*, AGE)
+>
+
+<!-- RECORD_UPDATE describes how to update records within a join group.
+     All records that satisfy the trigger will have the properties 
+     updated based on the functions specified
+-->
+<!ELEMENT RECORD_UPDATE (TRIGGER*, FUNCTION+)
+>
+
+<!ATTLIST RECORD_UPDATE
+    REF_DAY CDATA #REQUIRED
+    DAY_PROP CDATA #REQUIRED
+>
+
+<!ELEMENT TRIGGER EMPTY>
+<!ATTLIST TRIGGER 
+    PROP_NAME CDATA #IMPLIED
+    DIMENSION CDATA #IMPLIED
+    VALUE     CDATA #REQUIRED
+>
+<!ELEMENT AGE (SUMMARIZE_INFO?)>
+<!ATTLIST AGE
+    MAX_AGE CDATA #REQUIRED
+    UNITS (DAYS | WEEKS | MONTHS | QUARTERS | YEARS) #REQUIRED
+    DAY_PROP CDATA #REQUIRED
+    MONTH_PROP CDATA #REQUIRED
+    YEAR_PROP CDATA #REQUIRED
+    REF_DAY CDATA #REQUIRED
+    REF_MONTH CDATA #REQUIRED
+    REF_YEAR CDATA #REQUIRED
+>
+
+<!-- SUMMARIZE_INFO describes how to compute summaries of coarser granularity
+     from lesser-granularity information.
+     Validation that summeries "make sense" is not performed because there is 
+     no comncept in the code of the granularity of a record.
+          RECS_IN_SUMMARY-is the number of units (specified in the AGE element)
+                      to use for summary info (eg. UNITS=MONTHS, SUMMARY_AGE=3
+                      means "use the three oldest months").
+          UNIT-       is the end granularity of the record. This is used to determine
+                      at which reference dates summaries occur (for WEEKS, always,
+                      for QUARTERS, at the end of each quarter, for YEARS, at the end
+                      of each year).
+-->
+<!ELEMENT SUMMARIZE_INFO (FUNCTION+)>
+<!ATTLIST SUMMARIZE_INFO
+    RECS_IN_SUMMARY CDATA #REQUIRED
+    UNIT (WEEKS | QUARTERS | YEARS) #REQUIRED
+>
+
+<!ELEMENT FUNCTION EMPTY>
+<!ATTLIST FUNCTION
+    PROP_NAME CDATA #IMPLIED
+    DIMENSION_ID CDATA #IMPLIED
+    FUNCTION  (SUM | NEWEST | OLDEST | CREATE | ANY) #REQUIRED
+    VALUE CDATA #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    RECORD_CACHE - Collect records for random access.
+
+____________________________________________________________ -->
+<!ELEMENT RECORD_CACHE
+    ( COMMENT?
+    , RECORD_SOURCE
+    , DIMENSION_SOURCE?
+    , RECORD_INDEX
+    )
+>
+<!ATTLIST RECORD_CACHE
+    NAME              CDATA                     #REQUIRED
+    FRC_PVAL_IDX      (TRUE | FALSE)            "FALSE"
+    DISK_BACKED       (NONE | IN_MEMORY_INDEX)  "NONE"
+    COMBINE_RECORDS   (TRUE | FALSE)            #IMPLIED
+    DEDUP_COMBINED_PVALS   (TRUE | FALSE)            #IMPLIED
+    MAX_RECORDS       CDATA                     #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    RECORD_MANIPULATOR - Evaluate expressions that manipulate a record.
+
+____________________________________________________________ -->
+<!ELEMENT RECORD_MANIPULATOR
+    ( COMMENT?
+    , RECORD_SOURCE
+    , DIMENSION_SOURCE?
+    , NAV_CONFIG_SOURCE?
+    , RECORD_INDEX?
+    , PROP_DECL*
+    , EXPRESSION*
+    )
+>
+<!ATTLIST RECORD_MANIPULATOR
+    NAME                CDATA           #REQUIRED
+    FRC_PVAL_IDX        (TRUE | FALSE)  "TRUE"
+    IS_ACCESS_RULES     (TRUE | FALSE)  "FALSE"
+>
+
+<!ELEMENT EXPRESSION
+    ( COMMENT?
+    , EXPRBODY?
+    , (EXPRNODE | EXPRESSION)*
+    )
+>
+
+<!-- ____________________________________________________________
+
+    JAVA_MANIPULATOR - Use java to implement a pipeline component.
+
+    You write a class which implements the com.endeca.edf.adapter.Adapter or
+    com.endeca.edf.manipulator.Manipulator interface and give the name of this
+    class as the CLASS_NAME attribute.
+____________________________________________________________ -->
+<!ELEMENT JAVA_MANIPULATOR
+    ( COMMENT?
+    , RECORD_SOURCE*
+    , PASS_THROUGH*
+    )
+>
+<!ATTLIST JAVA_MANIPULATOR
+    NAME    CDATA   #REQUIRED
+    CLASS_NAME  CDATA   #IMPLIED
+    JAVA_HOME           CDATA                                           #IMPLIED
+    JAVA_CLASSPATH      CDATA                                           #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    PERL_MANIPULATOR - Use perl to implement a pipeline component.
+
+    You can either provide perl methods to override the prepare,
+    next_record, get_records and finish methods of
+    EDF::Manipulator, or write your own class that provides these
+    methods and fill in the CLASS attribute.
+
+____________________________________________________________ -->
+<!ELEMENT PERL_MANIPULATOR
+    ( COMMENT?
+    , RECORD_SOURCE*
+    , RECORD_INDEX?
+    , PERL_METHOD*
+    )
+>
+<!ATTLIST PERL_MANIPULATOR
+    NAME    CDATA   #REQUIRED
+    CLASS_NAME  CDATA   #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    PERL_METHOD - perl code implementing a pipeline component method.
+    Recognized method names are:
+    PREPARE - evaluated prior to the start of processing
+    NEXT_RECORD - evaluated to return the next record
+    GET_RECORDS - evaluated to get all records matching a key
+    FINISH - evaluated after processing has finished
+
+    The body of the method can be in-line, or in a file retrievable
+    via URL.
+____________________________________________________________ -->
+<!ELEMENT PERL_METHOD (#PCDATA)>
+<!ATTLIST PERL_METHOD
+    NAME        (PREPARE | FINISH | NEXT_RECORD | GET_RECORDS) #REQUIRED
+    URL     CDATA       #IMPLIED
+    COMPRESSED  (TRUE|FALSE)    #IMPLIED
+    ENCODING    CDATA       #IMPLIED
+>
+
+<!-- The STREAM type is for internal functionality; it should not be used -->
+
+<!ATTLIST EXPRESSION
+    TYPE ( PROPERTY
+         | DVAL
+         | INTEGER
+         | STRING
+         | STREAM
+         | VOID
+         | FLOAT
+         | PRE_RECORD
+         | PRE_DIMENSION)   #REQUIRED
+    NAME        CDATA        #REQUIRED
+    LABEL       CDATA        #IMPLIED
+    URL         CDATA        #IMPLIED
+>
+
+<!ELEMENT EXPRNODE (EXPRNODE*)>
+<!ATTLIST EXPRNODE
+    NAME    CDATA   #REQUIRED
+    VALUE   CDATA   #IMPLIED
+>
+<!ELEMENT EXPRBODY (#PCDATA)>
+
+<!-- ____________________________________________________________
+    PROP_MAPPER - Map source properties to Endeca properties
+    and dimensions.
+
+    RECORD_INDEX - Include a record index to have the PROP_MAPPER
+    identify records by index in log messages.
+
+    IMPLICIT_MAPPING - whether to implicitly find mappings between
+    source properties and like-named Endeca properties.
+
+    DEFAULT_MAP_MODE - how to map properties that have neither
+    explicit nor implicit mappings. NONE means to ignore them; PROP
+    means to create a PROP_MAPPING_PROP for them. DIM means to create
+    a PROP_MAPPING_DIM for them.
+
+    DEFAULT_MAX_LENGTH - when creating implicit or default mappings,
+    the max length to use. The default is to not limit property
+    mappings, and to limit dimension mappings to 255 chars.
+-->
+<!ELEMENT PROP_MAPPER
+    (COMMENT?
+    , RECORD_SOURCE
+    , DIMENSION_SOURCE
+    , RECORD_INDEX?
+    , (PROP_MAPPING_NONE|
+       PROP_MAPPING_PROP|
+       PROP_MAPPING_DIM)*
+    )
+>
+<!ATTLIST PROP_MAPPER
+    NAME            CDATA       #REQUIRED
+    IMPLICIT_MAPPING    (TRUE|FALSE)    "TRUE"
+    DEFAULT_MAP_MODE    (NONE|PROP|DIM) "NONE"
+    DEFAULT_MAX_LENGTH  CDATA       #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    PROP_MAPPING_NONE - Configure a source property to not be mapped.
+
+    PROP_NAME - the name of the source property that should not be
+    mapped.
+
+    Note that configuring a property for PROP_MAPPING_NONE and other
+    mappings as well is not inconsistent, and will not generate an
+    error or warning, but doesn't really mean anything either.
+
+-->
+<!ELEMENT PROP_MAPPING_NONE EMPTY>
+<!ATTLIST PROP_MAPPING_NONE
+    PROP_NAME   CDATA   #REQUIRED
+>
+
+<!-- ____________________________________________________________
+
+    PROP_MAPPING_PROP - Configure a source property to be mapped to an
+    Endeca property.
+
+    PROP_NAME - the name of the source property that should be mapped
+    to an Endeca property.
+
+    TARGET_NAME - the name of the Endeca property the source property
+    will be mapped to. If the two have different names, the source
+    property is copied into the target property. If they have the same
+    name, no copy is done. In either case, the PROP_MAPPER will ensure
+    that a PROP_REF exists for the TARGET_NAME.
+
+    MAX_LENGTH - the maximum length of source property to
+    map. Properties longer than this will generate a warning, and will
+    not be copied.
+
+-->
+<!ELEMENT PROP_MAPPING_PROP EMPTY>
+<!ATTLIST PROP_MAPPING_PROP
+    PROP_NAME   CDATA   #REQUIRED
+    TARGET_NAME CDATA   #REQUIRED
+    MAX_LENGTH  CDATA   #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    PROP_MAPPING_DIM - Configure a source property to be mapped to an
+    Endeca dimension.
+
+    PROP_NAME - the name of the source property that should be mapped
+    to an Endeca dimension.
+
+    TARGET_NAME - the name of the Endeca dimension the source property
+    will be mapped to. The record will be tagged with DVals from the
+    target dimension that match the source property value. The
+    PROP_MAPPER will ensure that a DIMENSION_REF and PRECEDENCE_RULE
+    exists for the TARGET_NAME.
+
+    MAX_LENGTH - the maximum length of source property to
+    map. Properties longer than this will generate a warning, and will
+    not be matched.
+
+    MATCH_MODE - NORMAL means to tag with any matching DVals;
+    MUST_MATCH is like normal, but if none match, issue a
+    warning. AUTO_GEN is like NORMAL, but if none match, a new,
+    matching DVal is created, and the record is tagged with it.
+
+-->
+<!ELEMENT PROP_MAPPING_DIM EMPTY>
+<!ATTLIST PROP_MAPPING_DIM
+    PROP_NAME   CDATA   #REQUIRED
+    TARGET_NAME CDATA   #REQUIRED
+    MAX_LENGTH  CDATA   #IMPLIED
+    MATCH_MODE  (NORMAL|MUST_MATCH|AUTO_GEN) "NORMAL"
+>
+
+<!-- ____________________________________________________________
+
+    INDEXER_ADAPTER - Export records, dimensions, and config for the indexer.
+        * Configuring the Output Format:
+            In order for the indexer to process output from the
+            IndexerAdapter, the output format attributes must be
+            configured in one of the following ways:
+                1) Set the OUTPUT_FORMAT to 'LEGACY' and leave all
+                OUTPUT_XXX_FORMAT attributes unset. The indexer
+                will then input data in the legacy format.
+                2) Set the OUTPUT_RECORD_FORMAT to 'BINARY' and
+                the OUTPUT_DIMENSION_FORMAT attributes to 'XML'. The
+                indexer will input records in binary, and dimensions in
+                XML.
+            The indexer can not process any other combinations of
+            formats. However, setting the OUTPUT_RECORD_FORMAT to
+            'XML' can be useful for debugging.
+____________________________________________________________ -->
+<!ELEMENT INDEXER_ADAPTER
+    ( COMMENT?
+    , RECORD_SOURCE
+    , DIMENSION_SOURCE*
+    , NAV_CONFIG_SOURCE?
+    , PASS_THROUGH*
+    , EXPRESSION*
+    , RECORD_ID_SPEC?
+    , RECORD_GROUP?
+    , ROLLOVER?
+    )
+>
+<!ATTLIST INDEXER_ADAPTER
+    NAME            CDATA                   #REQUIRED
+    FRC_PVAL_IDX   (TRUE | FALSE)           "TRUE"
+    OUTPUT_URL      CDATA                   #IMPLIED
+    OUTPUT_PREFIX   CDATA                   #IMPLIED
+    OUTPUT_RECORD_FORMAT (XML|BINARY)       "BINARY"
+    OUTPUT_NAV_CONFIG_FORMAT (XML)      #IMPLIED
+    OUTPUT_DIMENSION_FORMAT (XML | INTERNAL_DIM_XML) "INTERNAL_DIM_XML"
+    NAV_CONFIG_URL  CDATA                   #IMPLIED
+    NAV_CONFIG_FORMAT    (XML)              #IMPLIED
+    MULTI   (TRUE|FALSE)                #IMPLIED
+    MULTI_PROP_NAME CDATA               #IMPLIED
+    FILTER_UNKNOWN_PROPS (TRUE|FALSE)       "TRUE"
+    %compression;
+>
+
+<!--
+    NOTE: RECORD_ID_SPEC is being deprecated. The features in this
+          element are being implemented transparently by the
+          indexer
+-->
+<!ELEMENT RECORD_ID_SPEC EMPTY>
+<!ATTLIST RECORD_ID_SPEC
+    PROP_NAME       CDATA                   #REQUIRED
+    GENERATE        (TRUE | FALSE)          #IMPLIED
+    VALIDATE        (FALSE | TRUE)          #IMPLIED
+>
+<!--
+ ROLLOVER encodes two things:
+ 1. When writing to multiple indexers, how to determine which indexer
+    a record goes to. This is controlled by NUM_IDX, PROP_NAME, PROP_TYPE,
+    REMOVE_PROP, and VALIDATE.
+ 2. When writing more records than fit into a single file, when does
+    output get rolled over to a new file. This is controlled by TYPE,
+    CUTOFF and ROLL_URL.
+-->
+<!ELEMENT ROLLOVER EMPTY>
+<!ATTLIST ROLLOVER
+    NAME            CDATA                   #REQUIRED
+
+    NUM_IDX         CDATA                   #IMPLIED
+    PROP_NAME       CDATA                   #IMPLIED
+    PROP_TYPE       (ALPHA | INTEGER)       "ALPHA"
+    REMOVE_PROP     (TRUE | FALSE)          "FALSE"
+    VALIDATE        (TRUE | FALSE)          "FALSE"
+
+    TYPE            (SIZE | ENTRIES)        #IMPLIED
+    CUTOFF          CDATA                   #IMPLIED
+    ROLL_URL        CDATA                   #IMPLIED
+>
+
+<!-- ____________________________________________________________
+
+    UPDATE_ADAPTER - Based on records passed through, generate an update
+                     for the dgraph
+____________________________________________________________ -->
+<!ELEMENT UPDATE_ADAPTER
+    ( COMMENT?,
+      RECORD_SOURCE,
+      DIMENSION_SOURCE*,
+      RECORD_ID_SPEC?,
+      ROLLOVER?
+    )
+>
+<!ATTLIST UPDATE_ADAPTER
+    NAME            CDATA                   #REQUIRED
+    OUTPUT_URL      CDATA                   #REQUIRED
+    OUTPUT_PREFIX   CDATA                   #IMPLIED
+    MULTI   (TRUE|FALSE)    #IMPLIED
+    MULTI_PROP_NAME CDATA   #IMPLIED
+    FILTER_UNKNOWN_PROPS (TRUE|FALSE) "TRUE"
+    %compression;
+>
+

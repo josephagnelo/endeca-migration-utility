@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % search_interface.dtd SYSTEM "search_interface.dtd">
+%search_interface.dtd;
+
+<!--
+	The DID_YOU_MEAN and AUTO_SUGGEST elements here configure the global
+	behavior of spelling correction.
+
+-->
+<!ELEMENT RECSEARCH_CONFIG (COMMENT?,
+		DID_YOU_MEAN?, AUTO_SUGGEST?,
+		SEARCH_INTERFACE*)>
+<!ATTLIST RECSEARCH_CONFIG
+	WHY_MATCH			(NONE | CONCISE
+					| COMPLETE)		"NONE"
+	WORD_INTERP			(TRUE | FALSE)		"FALSE"
+	RETURN_RELRANK_SCORE		(TRUE | FALSE)		"FALSE"
+
+	ENABLE_DID_YOU_MEAN		(TRUE | FALSE)		#IMPLIED
+	ENABLE_AUTO_SUGGEST		(TRUE | FALSE)		#IMPLIED
+>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+	Note that order *does* matter in update statements.
+-->
+
+<!ELEMENT UPDATE (UPD_UNIT+)>
+
+<!--
+ 	An UPD_UNIT is a complete set of information that describes a valid
+        update. Any new dimension values a record refers to must be 
+        in the DIMENSION_VALUE_ADD section preceding the RECORD_* element.
+        The size of a unit is variable so that it can
+        by small enough that an arbitrary number can be proccessed at one
+        time by the dgraph, while still allowing it to become large enough that
+        a unit can be sent over the network efficiently. The dgraph can 
+        choose how many unit to read and will always have valid data 
+        at the point it stops reading. This also allows forge to process a record at 
+        a time (by creating units with a single record) and
+        still provide the relevant dimension value information before the record 
+        information.
+-->
+<!ELEMENT UPD_UNIT (DIMENSION_VALUE_ADD*,
+		  (RECORD_ADD | RECORD_REPLACE | RECORD_ADD_OR_REPLACE | 
+           RECORD_UPDATE | RECORD_DELETE | RECORD_DELETE_OR_IGNORE)+)>
+
+<!--
+	RECORD_ADD instructs the system to add a new record with the given
+	id and property and dimension values. An error will be logged
+	and the RECORD_ADD will be ignored if there is already a record
+	that has the same property value for the property that has been
+	specified to be the RECORD_SPEC.
+
+-->
+<!ELEMENT RECORD_ADD  (PROP+, DVAL_ID*)>
+<!ATTLIST RECORD_ADD
+	PARTITION		CDATA #REQUIRED
+>
+
+<!--
+	RECORD_ADD_OR_REPLACE instructs the system to add a new record or replace
+	an existing record with the given id and property and dimension values. 
+	If no record exists with the specified property value for the property
+	that has been designated as the RECORD_SPEC then the system will add
+	a new record, otherwise the existing record will be replaced.
+
+-->
+<!ELEMENT RECORD_ADD_OR_REPLACE  (PROP+, DVAL_ID*)>
+<!ATTLIST RECORD_ADD_OR_REPLACE
+	PARTITION		CDATA #REQUIRED
+>
+
+<!--
+	RECORD_UPDATE tells the system to modify an existing record
+	with the given RECORD_SPEC property with the contained values.
+	If there is no existing record with the given RECORD_SPEC property
+	value, then an error will be logged and the RECORD_UPDATE will be
+	ignored. Note that the order of add and deletes for properties values
+	and dimension values *does* matter. For example, if a DVAL_ADD is
+	followed by a DVAL_DELETE for the same dimension *all* dimension
+	values for that dimension will be removed, including the newly
+	added value. On the other hand, providing a DVAL_DELETE before a
+	DVAL_ADD for the same dimension tells the system to replace all
+	values in the given dimension with the newly specified ones.
+
+-->
+<!ELEMENT RECORD_UPDATE (PROP+, (PVAL_ADD | PVAL_DELETE)*,
+			 (DVAL_ADD | DVAL_DELETE)*)>
+
+
+<!--
+	A RECORD_REPLACE element tells the system to remove existing the
+	values for the record with the value specified by RECORD_SPEC
+	property and replace them with the contained values. If no such
+	record exists then an error is logged and the RECORD_REPLACE
+	is ignored.
+
+-->
+<!ELEMENT RECORD_REPLACE (PROP+, DVAL_ID*)>
+
+
+<!--
+	RECORD_DELETE tells the system to remove the record with the
+	specified value for the RECORD_SPEC property from the system. An
+	error will be logged and the RECORD_DELETE will be ignored if
+	there is no record with the given id.
+
+-->
+<!ELEMENT RECORD_DELETE (PROP+)>
+
+   
+<!--
+	RECORD_DELETE_OR_IGNORE tells the system to remove the record 
+	with the specified value for the RECORD_SPEC property if it 
+	exists. If the specified record does not exist the 
+	RECORD_DELETE_OR_IGNORE will be ignored and no error message
+	will be logged.
+
+-->
+<!ELEMENT RECORD_DELETE_OR_IGNORE (PROP+)>								
+								
+<!--
+	A DVAL_ADD element instructs the system to add the dimension
+	value with given id to the record in question. If the
+	dimension is single assign, then any existing value for the
+	dimension will be removed and the new value will be
+	added. Otherwise, the new value will simply be added to any
+	existing assignments. If the DVAL_ID is not valid then the
+	entire RECORD_UPDATE or RECORD_REPLACE operation will fail and
+	be ignored.
+-->
+<!ELEMENT DVAL_ADD (DVAL_ID)>
+
+<!--
+	DVAL_DELETE tells the system to remove dimension value
+	assignments from the record. If the DVAL_DELETE element
+	contains a DIM_ROOT_ID element then all existing dimension
+	values for the dimension specified will be removed. Otherwise,
+	if the DVAL_DELETE element contains a DVAL_ID element then the
+	given dimension will be removed from the record if it
+	exists. If the DIM_ROOT_ID or DVAL_ID is not valid then the
+	RECORD_UPDATE or RECORD_REPLACE operation will fail and be
+	ignored.
+-->
+<!ELEMENT DVAL_DELETE (DIM_ROOT_ID | DVAL_ID)>
+
+<!--
+	PVAL_ADD tells the system to add the given property value to
+	the record in question. If the PROP element is not valid
+	(e.g. if the name given does not refer to a valid property
+	name) then the entire enclosing RECORD_REPLACE or
+	RECORD_UPDATE operation fails and is ignored.
+-->
+<!ELEMENT PVAL_ADD (PROP)>
+
+<!--
+	PVAL_DELETE tells the system to delete value assigments on a
+	specified property. If the PVAL_DELETE element contains a
+	PROPERTY_NAME element then all assignments for the property
+	will be deleted. Otherwise, if the PVAL_DELETE element
+	contains a PROP element then the specified PROP is deleted
+	from the record. If any error are encountered while processing
+	the operation, then the entire RECORD_UPDATE or RECORD_REPLACE
+	operation is aborted and ignored.
+-->
+<!ELEMENT PVAL_DELETE (PROPERTY_NAME)>
+
+<!--
+	PROPERTY_NAME is the name of a property
+-->
+<!ELEMENT PROPERTY_NAME EMPTY>
+<!ATTLIST PROPERTY_NAME
+	NAME		CDATA #REQUIRED
+>
+
+<!--
+	A DIMENSION_VALUE_ADD specifies dimension values that should be
+	added to the system. The given DIM_ROOT_ID must refer to an
+	existing dimension.
+-->
+<!ELEMENT DIMENSION_VALUE_ADD (DIM_ROOT_ID, DIMENSION_ADD_SUBTREE+)>
+
+<!--
+	A DIMENSION_ADD_SUBTREE specifies a new subtree to add to an
+	existing dimension. The PARENT attribute specfies the the id
+	of the dimension *value* to which to add these nodes as
+	children.
+-->
+<!ELEMENT DIMENSION_ADD_SUBTREE (DIMENSION_NODE)>
+<!ATTLIST DIMENSION_ADD_SUBTREE
+	PARENT			CDATA #IMPLIED
+>
+
+<!ELEMENT DIM_ROOT_ID EMPTY>
+<!ATTLIST DIM_ROOT_ID
+	ID			CDATA #REQUIRED
+>

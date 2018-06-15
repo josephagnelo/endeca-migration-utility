@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+
+	The AUTO_PROPMAP element should only be created by forge (upon
+	forge output) and is intended only for consumption by the indexer.
+
+	The PROPNAME sub-elements specify properties that should be read in
+	by the indexer as if they have corresponding PROP_REF's (i.e. when
+	in strict attrs and a prop has no PROP_REF, but has an entry in
+	the AUTO_PROPMAP element, it should be considered valid).
+
+	The AUTO_PRIMARY_DIMENSION attribute specifies whether or not
+	the indexer should create a default primary dimension of the
+	form Endeca -> Endeca, if no other primary dimension exists.
+	Note that even if such a dimension is created, the only dimensions
+	to get precedence-linked to it will be the ones specified with
+	AUTO_PRECEDENCE_RULE elements.
+
+-->
+<!ELEMENT AUTO_PROPMAP (AUTO_PRECEDENCE_RULE*, PROPNAME*)>
+<!ATTLIST AUTO_PROPMAP
+	AUTO_PRIMARY_DIMENSION		(TRUE | FALSE)		"FALSE"
+>
+
+<!--
+	The AUTO_PRECEDENCE_RULE element specifies that the indexer should
+	automatically generate a precendence rule from the root DVAL_ID of
+	the primary dimension to the root dval of the specified dimension,
+	NAME.
+
+-->
+<!ELEMENT AUTO_PRECEDENCE_RULE EMPTY>
+<!ATTLIST AUTO_PRECEDENCE_RULE
+	NAME				CDATA			#REQUIRED
+>

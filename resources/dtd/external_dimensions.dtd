@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!-- 
+    This dtd specifies the external interface used to provide dimensions to 
+    the endeca system. It allows specification of the same features as 
+    the dimensions.dtd, but with greater simplicity and ease-of-use.
+    
+    Hierarchy can be specified in three different ways:
+    
+    1) Via embedded XML hierarchy
+        <node name="color" id=1>
+            <node id=2 name="red"/>
+            <node id=3 name="blue"/>
+        </node>
+    2) Via the parent attribute, referencing ids:
+        <node name="color" id=1/>
+        <node id=2 name="red" parent="1"/>
+        <node id=3 name="blue" parent="1"/>
+    3) Via the child element, referencing ids:
+        <node name="color" id="1">
+            <child id="2"/>
+            <child id="3"/>
+        </node>
+        <node name="red" id="2"/>
+        <node name="blue" id="3"/>
+        
+     Only one of the three ways of describing hierarchy can be used in a given file.
+     
+     There may be multiple dimensions per file. Any <node> element that does not have a 
+     parent (using any of the three methods above) describes a new dimension.
+-->
+<!ELEMENT external_dimensions (node+)>
+
+<!--
+    The node element is the basic unit in this dtd. All of the sub-elements are optional
+    and provide additional features. A simple hierarchy can be described using just
+    embedded node elements (hierarchy options 1 and 2, above), or node and child elements
+    (hierarchy option 3, above). Additional functionality, such as synonyms are optional.
+    
+    name    -   The name for a node, displayed to the end-user. 
+                This value is the equivalent of a SYN element with DISPLAY="TRUE"
+    
+    id      -   The id for a node. When imported by Developer Studio, the id is optional 
+                in the case that it is not needed to reference parents or children 
+                (example 1 above). When read in by Forge, the id must be unique within a file.
+                Note that Forge dimensions have greater restrictions on ids-they must 
+                unique across the system, numeric and between 0 and ~2 billion. 
+                Forge will handle the mapping from the more relaxed restrictions provided 
+                by this dtd to the greater restrictions of the rest of the system. 
+                
+                How this field is filled depends on application requirements when a new
+                version of the external dimension is provided. Forge will use the ids
+                to determine which dvals map to dvals from the previous version. 
+                
+                If the external system assigns ids to nodes, then that id is probably 
+                sufficient-each time the same external id is encountered, it will be
+                assigned the same id in the Endeca system.
+                
+                This field can also be filled in with other values to achieve different 
+                behaviors. For example, if the node name is placed in the id field and 
+                the name is updated in the external dimension, then Forge will treat the 
+                node as a new dval. However, if the node name is placed in the id field 
+                and the node is moved in the external dimension, Forge will treat the node 
+                as an existing dval and assign the same id. If the requirement is that a 
+                moved node be treated as a new dval, then the user should place a string 
+                representing the path from dimension root to each node in the id field. 
+                In that case moving a node will change the path and thus the value in the 
+                id field, and Forge will treat it as a new dval.
+
+    parent  -   The parent attribute can be used to describe hierarchy only if embedded 
+                hierarchy and child elements are not used (see the examples above). 
+                In this case, the parent value should match the id value of its parent.
+                
+    classify-   The classify attribute specifies whether the node name participates in 
+                classification against records. Synonyms may be used for matching in 
+                addition or instead. For example, the following node will display
+                spelled-out numbers to the end-user, but will match only numeric fields:
+                <node name="One" id="1" classify="false">
+                    <synonym name="1"/>
+                </node>
+                
+    search  -   The search attribute specifies whether the node name is searchable.
+-->                 
+<!ELEMENT node (synonym*, range?, property*, node*, child*)>
+<!ATTLIST node
+        name        CDATA           #REQUIRED
+        id          CDATA           #IMPLIED
+        parent      CDATA           #IMPLIED
+        classify    (true|false)    "true"
+        search      (true|false)    "true"
+>
+
+<!--
+    The child element can be used to describe hierarchy only if embedded hierarchy and
+    parent elements are not used (see the examples above). In this case the child id
+    element value should match the id value of the child node.
+    
+    id      -   The id that references a child of the containing node.
+-->
+<!ELEMENT child EMPTY>
+<!ATTLIST child
+        id          CDATA           #REQUIRED
+>
+
+<!--
+    The synonym element describes synonyms for the node. Synonyms can be used to adjust
+    matching and searching behavior.
+    
+    name    -   The name for a synonym.
+    
+    classify-   The classify attribute specifies whether the synonym name participates in
+                classification against records.
+                
+    search  -   The search attribute specifies whether the synonym name is searchable.
+-->
+<!ELEMENT synonym EMPTY>
+<!ATTLIST synonym
+        name        CDATA           #REQUIRED
+        classify    (true|false)    "true"
+        search      (true|false)    "true"
+>
+<!--
+    The range element describes a range used during range matching. If a node contains
+    a range, then the range will be used in range matching (i.e. there is no 
+    classify="false" equivalent for ranges). Ranges have two bounds which describe the 
+    extent of the range. The first bound to appear will become the lower bound and the 
+    second bound to appear will become the upper bound. 
+    
+    type    -   The type of bound, which impacts how comparisons are done.
+-->
+<!ELEMENT range (bound, bound)>
+<!ATTLIST range
+        type        (alpha|numeric)    #REQUIRED
+>
+<!-- 
+    The bound element describes the bound of a range. Based on the range type, the bound
+    value is used for comparison.
+    
+    value   -   The value of the bound. Must be convertible into the type specified
+                in the range element (above)
+
+    closure -   The closure attribute specifies whether the bound value is included in
+                the range or not. Open means that all values up/down to but NOT including
+                the value are part of the range. Closed means that all values up/down
+                to and including the value are part of the range.
+    
+    infinite -  The infinite attribute specifies that the bound is infinite. If the 
+                infinite attribute is specified, then the bound value is ignored. If
+                a bound has the attribute infinite="positive", then the bound describes 
+                an upper bound of +infinity. If the bound has an attribute infinite="negative, 
+                then the bound describes a lower bound of -infinity.
+-->           
+<!ELEMENT bound EMPTY>
+<!ATTLIST bound
+        value        CDATA              #IMPLIED
+        closure     (open|closed)       #REQUIRED
+        infinite    (positive|negative) #IMPLIED
+>
+<!--
+    The property element allows name-value pairs to be associated with a node. Properties
+    are often used as pass-through information used by the front-end.
+    
+    name    -   The name attribute specifies the name of the property.
+-->
+<!ELEMENT property (#PCDATA)>
+<!ATTLIST property
+        name        CDATA           #REQUIRED
+>

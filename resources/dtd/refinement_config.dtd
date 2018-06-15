@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT REFINEMENTS_CONFIG (COMMENT?, (CLUSTERS | REFINEMENTS)*, STATS?)>
+
+<!--
+	SORT_TYPE			(ALPHA |
+					 NUMERIC)		"ALPHA"
+
+	If the SORT_TYPE attribute is set to ALPHA, then the refinement-rank
+	refinements from this dimension are returned in alphabetic
+	order. If it is set to NUMERIC, then they are sorted numerically.
+
+	SORT_ORDER			(ASC | DESC)		"ASC"
+
+	The SORT_ORDER attribute specifies the order in which refinements
+	are returned.  ASC specifies ascending order while DESC specifies
+	descending order.
+
+	DVAL_COLLAPSE_THRESHOLD		CDATA			#IMPLIED
+
+	The DVAL_COLLAPSE_THRESHOLD attribute specifies the minimum number of
+	refinements that must be the children of a dval from this dimension,
+	before the refinements are collapsed into their parent e.g.
+
+	If a dimension named 'A' has a DVAL_COLLAPSE_THRESHOLD of 5 and a
+	dval in 'A' contains a collapsible dval with 10 child refinements,
+	then the refinement returned will be the collapsible dval, instead
+	of the 10 child refinements.
+-->
+<!ELEMENT REFINEMENTS (STATS?, DYNAMIC_RANKING?)>
+<!ATTLIST REFINEMENTS
+	NAME				CDATA			#REQUIRED
+	SORT_TYPE			(ALPHA |
+					 NUMERIC)		"ALPHA"
+	SORT_ORDER			(ASC | DESC)		"ASC"
+	DVAL_COLLAPSE_THRESHOLD		CDATA			#IMPLIED
+>
+
+
+<!--
+A CLUSTERS element enables clustering for a given dimension.
+
+NAME is the name of the dimension to enable clustering for.
+
+COHERENCE is a knob to specify the coherence / distinctiveness tradeoff. 
+This will be a number between 0 and 10, where 10 leads to the smallest 
+clusters, and 0 leads to the largest. Defaults to 5
+
+REC_SAMPLE_SIZE specifies how many records from the current 
+navigation state the dgraph should consider when computing 
+clusters. The default is 500. Lower numbers will be faster, but 
+lead to less accurate results.
+
+MAX_CLUSTERS is the maximum number of clusters to return. Defaults to 6.
+
+MAX_CLUSTER_SIZE is the maximum number of terms in a cluster. Defaults to 8.
+
+MAX_CLUSTER_OVERLAP:
+An integer between 0 an 10 which dictates the maximum overlapingness of
+clusters that we will return. O disallows any overlap, and 10 allows
+full overlap. The default is 5.
+
+MAX_REFINEMENT_PRECISION:
+A float between 0 and 1 which specifies the maximum precision for a
+refinement which we will consider for clustering. Refinements with
+higher precision will be thrown away. Setting this lower prevents
+clustering refinements which essentially summarize your query.
+
+-->
+<!ELEMENT CLUSTERS EMPTY>
+<!ATTLIST CLUSTERS
+	NAME				                    CDATA			#REQUIRED
+	COHERENCE                         CDATA                   #IMPLIED
+	REC_SAMPLE_SIZE             CDATA                   #IMPLIED
+	MAX_CLUSTERS                  CDATA                   #IMPLIED
+	MAX_CLUSTER_SIZE           CDATA                   #IMPLIED
+	MAX_CLUSTER_OVERLAP  CDATA                   #IMPLIED
+    MAX_REFINEMENT_PRECISION CDATA          #IMPLIED
+>
+
+
+<!--
+	The DYNAMIC_RANKING element controls how refinements are returned
+	from the dimension that contains this element.	If this element is
+	included, then the refinement-ranking feature will be activated
+	for this dimension.  For more details on refinement-ranking,
+	refer to the Endeca Documentation.
+
+	COUNT				CDATA			#IMPLIED
+
+	The COUNT attribute specifies the number of refinements that should
+	be returned for this dimension.
+
+	MORE				(TRUE | FALSE)		#REQUIRED
+
+	If the MORE attribute is set to TRUE, then the ENE will compute the
+	'More...' refinement for dimensions.  If not, then the ENE will
+	only compute the top refinements based on ranking and return those.
+
+	TOP_REFINEMENTS_SORT		(DYNAMIC_RANK |
+					DEFAULT)		"DYNAMIC_RANK"
+
+	If TOP_REFINEMENTS_SORT is set to DYNAMIC_RANK, then the refinements
+	are returned in refinement-rank order i.e. refinements with
+	higher rank are returned before refinements with lower rank.
+	If DEFAULT is selected, then refinements will be returned in the
+	order specified by the containing REFINEMENTS element.
+
+-->
+<!ELEMENT DYNAMIC_RANKING EMPTY>
+<!ATTLIST DYNAMIC_RANKING
+	COUNT				CDATA			#IMPLIED
+	MORE				(TRUE | FALSE)		#REQUIRED
+	TYPE				(FREQUENCY |
+					WEIGHTED_FREQUENCY)	"FREQUENCY"
+	TOP_REFINEMENTS_SORT		(DYNAMIC_RANK |
+					DEFAULT)		"DYNAMIC_RANK"
+>
+
+<!--
+	The NUM_RECORDS attribute specifies whether the ENE should
+	compute the number of records associated with each refinement.
+	This attribute affects the run-time operation of the ENE.  This
+	number is returned as a dval property in the ENE query results.
+	The default value of this attribute is FALSE.
+
+	The NUM_REFINEMENTS_IN_GROUP attribute specifies whether the ENE
+	should return the number of refinements in an open refinement group.
+	This attribute affects pre-computation and the run-time operation
+	of the ENE.  This number is returned as a dval property in the
+	ENE query results.  The default value of this attribute is FALSE.
+
+	The MAX_RECORDS_COUNT specifies the maximum number of records that
+	should be returned for the record statistics on a refinement.
+	This option is useful, if for example, you wish to know whether
+	there are at least 1000 records for a particular refinement option,
+	but you don't care if there are any more than that.  If you have
+	enabled record statistics in the ENE indexer configuration file,
+	reducing this number will improve the performance of the ENE.
+	Note that this threshold applies to all dimensions.  By default,
+	there is no threshold for the record statistics computation.
+
+	The RECORD_COUNT_DISABLE_THRESHOLD attribute specifies the maximum
+	number of records in a result set above which record statistics
+	should not be computed for the refinements.  By default, there is
+	no threshold for disabling the record statistics computation.
+
+	RETURN_DVAL_STATIC_RANK		(TRUE | FALSE)		#IMPLIED
+
+	The RETURN_DVAL_STATIC_RANK attribute specifies every dval's static
+	rank should be returned as a property on the dval, whenever it is
+	sent back in ENE computation results.  The default value of this
+	attribute is FALSE.
+
+	DVAL_STATIC_RECORD_COUNT	(TRUE | FALSE)		#IMPLIED
+
+	The DVAL_STATIC_RECORD_COUNT attribute specifies whether the number
+	of records associated with each dval should be returned as a dval
+	property when that dval is returned by the ENE (for example,
+	as a refinement).  The number of records associated with each
+	dval in this case is statically determined at index time, and is
+	the total number of records in the data set that have the dval.
+	The default value of this attribute is FALSE.
+
+	REFINEMENT_RANK_SCORE		(TRUE | FALSE)		#IMPLIED
+
+	The REFINEMENT_RANK_SCORE attribute specifies whether the ENE should
+	return the rank of each refinement that is from a ranked dimension.
+	If set to TRUE, then each refinement's rank will be returned as
+	a dval property.  This attribute affects pre-computation and the
+	run-time operation of the ENE.	The default value of this attribute
+	is FALSE.
+
+-->
+<!ELEMENT STATS EMPTY>
+<!ATTLIST STATS
+	NUM_RECORDS			(TRUE | FALSE)		"FALSE"
+	NUM_REFINEMENTS_IN_GROUP	(TRUE | FALSE)		"FALSE"
+	MAX_RECORDS_COUNT		CDATA			#IMPLIED
+	RECORD_COUNT_DISABLE_THRESHOLD	CDATA			#IMPLIED
+
+	DVAL_STATIC_RECORD_COUNT	(TRUE | FALSE)		"FALSE"
+	DVAL_STATIC_RANK		(TRUE | FALSE)		"FALSE"
+	REFINEMENT_RANK_SCORE		(TRUE | FALSE)		#IMPLIED
+>

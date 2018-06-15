@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+	Global run-time spelling configuration.
+-->
+<!ELEMENT SPELL_CONFIG (COMMENT?, SPELL_ENGINE?)>
+
+<!--
+	The SPELL_ENGINE element specifies what spelling engine to use.
+	There are two simple engines: ASPELL and ESPELL.  The other
+	three choices are used to combine spelling engines.  UNION_DICTS
+	combines the spelling suggestions from two or more engines.
+	FIRST_DICT returns suggestions from the first engine that can
+	handle a given word.  DICT_PER_LANGUAGE uses a separate dictionary
+	for each language so that, for example, the user won't receive 
+	English spelling suggestions for a Spanish query.
+
+	All spell engines have a LANGUAGES attribute, which causes the 
+	spelling engine to ignore words in any languages other than those
+	specified.  Languages are identified by their two-letter ISO 639 
+	code, e.g. "en" for English, "ja" for Japanese, etc.  Chinese has 
+	two variations: "zh-CN" for simplified, "zh-TW" for traditional.
+	Multiple languages should be separated by commas.
+-->
+<!ELEMENT SPELL_ENGINE (ASPELL | ESPELL | UNION_DICTS | FIRST_DICT | DICT_PER_LANGUAGE)>
+
+<!--
+	Aspell is a phonetic spelling engine that only works for 
+	English-like words (only letters A through Z, no accented letters,
+	no numbers, etc).
+-->
+<!ELEMENT ASPELL EMPTY>
+<!ATTLIST ASPELL
+	LANGUAGES			CDATA			""
+>
+
+<!--
+	Espell is a non-phonetic spelling engine that works for words 
+	in any language, as well as non-alphabetic words (i.e. words 
+	containing numbers or punctuation).
+-->
+<!ELEMENT ESPELL EMPTY>
+<!ATTLIST ESPELL
+	LANGUAGES			CDATA			""
+>
+
+<!--
+	FIRST_DICT lets you combine two or more spelling engines, such
+	that the first engine that can handle a given word will handle it,
+	and subsequent spelling engines will not even know about the word.
+
+	For example, if you have aspell as the first engine, and espell
+	as the second, then words that aspell cannot handle will be
+	handed to the espell engine instead.  In this configuration,
+	the espell engine would not know about any words handled by
+	aspell, so it would not suggest them as possible alternatives.
+-->
+<!ELEMENT FIRST_DICT  (ASPELL | ESPELL | UNION_DICTS | FIRST_DICT | DICT_PER_LANGUAGE)+>
+<!ATTLIST FIRST_DICT
+	LANGUAGES			CDATA			""
+>
+
+<!--
+	UNION_DICTS lets you combine two or more spelling engines, such
+	that each engine receives all words and all queries.
+
+	For example, if you union aspell and espell, then aspell will 
+	handle English-like words, while espell will handle all words.
+	Because the two spell engines have different strengths, this is
+	different behavior from simply letting espell handle all words.
+-->
+<!ELEMENT UNION_DICTS (ASPELL | ESPELL | UNION_DICTS | FIRST_DICT | DICT_PER_LANGUAGE)+>
+<!ATTLIST UNION_DICTS
+	LANGUAGES			CDATA			""
+>
+
+<!--
+	DICT_PER_LANGUAGE creates a separate dictionary for each 
+	language so that, for example, English queries do not produce
+	spelling suggestions in Spanish.
+-->
+<!ELEMENT DICT_PER_LANGUAGE (ESPELL)>
+<!ATTLIST DICT_PER_LANGUAGE
+	LANGUAGES			CDATA			""
+>
+

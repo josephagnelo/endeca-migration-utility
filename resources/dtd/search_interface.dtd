@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!--
+	The SEARCH_INTERFACE is a named collection of dimensions and/or
+	properties (both dimensions and properties can co-exist in a
+	SEARCH_INTERFACE). The dimensions and/or properties in the group
+	are specified by the MEMBER_NAME element which simply contains
+	the dimension/property name.
+
+	NOTE: The member dimension/property must be enabled for record
+	search, to participate in a SEARCH_INTERFACE.
+
+	If a property or dimension is not included in any SEARCH_INTERFACE
+	element, then an implicit SEARCH_INTERFACE element is created
+	with the same name as the property or dimension and that single
+	property or dimension as its only member.  The value for the
+	CROSS_FIELD_RELEVANCE_RANK is set to 0.
+
+	NAME				CDATA			#REQUIRED
+
+	NAME specifies the name of the SEARCH_INTERFACE.
+
+	CROSS_FIELD_RELEVANCE_RANK	CDATA			#IMPLIED
+
+	The CROSS_FIELD_RELEVANCE_RANK attribute specifies the relevance
+	rank score for cross-field matches.  The value should be an unsigned
+	32-bit integer.  The default value for CROSS_FIELD_RELEVANCE_RANK
+	is 0.
+
+	CROSS_FIELD_BOUNDARY		(ALWAYS
+					| ON_FAILURE
+					| NEVER)		"NEVER"
+
+	The CROSS_FIELD_BOUNDARY attribute specifies when the search
+	engine in the ENE should try and match search queries across
+	dimension/property boundaries, but within the members of
+	the SEARCH_INTERFACE.  If its value is set to ON_FAILURE,
+	then the search engine will only try to match queries across
+	dimension/property boundaries if it fails to find any match within
+	a single dimension/property.  If its value is set to ALWAYS, then
+	the engine will always look for matches across dimension/property
+	boundaries, in addition to matches within a dimension/property.
+	By default, the ENE will not look across boundaries for matches.
+
+	STRICT_PHRASE_MATCH		(TRUE | FALSE)    #IMPLIED
+
+	The STRICT_PHRASE_MATCH attribute specifies that the ENE should
+	interpret a query strictly when comparing white space in the query
+	with punctuation in the source text.  If set to FALSE, partial
+	word tokens connected in the source text by punctuation can be
+	matched to a phrase query where the partial tokens are separated
+	by spaces instead of matching punctuation.  NOTE: This attribute
+	has been deprecated and is ignored by the Navigation Engine.
+
+-->
+<!ELEMENT SEARCH_INTERFACE (MEMBER_NAME+, PARTIAL_MATCH?,
+				AUTO_SUGGEST?, DID_YOU_MEAN?)>
+<!ATTLIST SEARCH_INTERFACE
+	NAME				CDATA			#REQUIRED
+	DEFAULT_RELRANK_STRATEGY	CDATA			#IMPLIED
+	CROSS_FIELD_RELEVANCE_RANK	CDATA			#IMPLIED
+	CROSS_FIELD_BOUNDARY		(ALWAYS
+					| ON_FAILURE
+					| NEVER)		"NEVER"
+	STRICT_PHRASE_MATCH		(TRUE | FALSE)		#IMPLIED
+>
+
+<!--
+	The MEMBER_NAME element specifies the name of a property or
+	dimension.
+
+	RELEVANCE_RANK			CDATA			#IMPLIED
+
+	RELEVANCE_RANK is an unsigned integer that specifies the relevance
+	rank of a match on the specified dimension/property.
+	
+	SNIPPET_SIZE	      	CDATA       	"0"
+	
+	SNIPPET_SIZE must be a positive integer. SNIPPET_SIZE specifies
+	the maximum number of words a snippet may contain.
+
+-->
+<!ELEMENT MEMBER_NAME (#PCDATA)>
+<!ATTLIST MEMBER_NAME
+	RELEVANCE_RANK			CDATA			#IMPLIED
+	SNIPPET_SIZE			CDATA			"0"
+>
+
+<!-- 
+        The PARTIAL_MATCH element specifies if partial query matches 
+        should be supported for the SEARCH_INTERFACE that contains 
+        this element. 
+
+        MIN_WORDS_INCLUDED      CDATA                   #IMPLIED 
+
+        The MIN_WORDS_INCLUDED must be an integer value greater than 
+        zero.  All results will match at least this many words from 
+        the search query.  The default value of this attribute is one. 
+        
+        MAX_WORDS_OMITTED               CDATA                   #IMPLIED 
+        
+        The MAX_WORDS_OMITTED must be a non-negative integer value. 
+        If the original query had N words, then all results will match 
+        at least N - MAX_WORDS_OMITTED words.  If set to zero or left 
+        unspecified, any number of words may be omitted (i.e. there 
+        is no maximum).  The default value of this attribute is zero 
+        (no maximum). 
+
+--> 
+<!ELEMENT PARTIAL_MATCH EMPTY>
+<!ATTLIST PARTIAL_MATCH
+	MIN_WORDS_INCLUDED	CDATA				#IMPLIED
+	MAX_WORDS_OMITTED	CDATA				#IMPLIED
+>
+
+<!--
+	HITS_THRESHOLD specifies the maximum number of hits for which
+	DID_YOU_MEAN suggestions should be generated.  When a very large
+	number of hits are returned, computing the DID_YOU_MEAN alternatives
+	may be computationally expensive.  The default value is 20.
+
+	HITS_GAIN_THRESHOLD specifies the minimum percentage gain in hits in
+	order to consider an alternative valid.  The default value is 10%.
+	This value should be a decimal number between 0.0 and 1.0.
+
+	SPELLING_SCORE_THRESHOLD specifies the threshold correction score
+	for words used by the did-you-mean engine.  The default value is 150.
+
+	MAX_SUGGESTIONS_RETURNED specifies the maximum number of per-word
+	spelling corrections to compute for each term in the search query.
+	The default value is 3.
+
+	Setting the WORD_BREAK_ANALYSIS attribute to ENABLE causes the
+	did-you-mean engine to consider alternate word separation points
+	for the query in order to generate suggestions.  The default value
+	is ENABLE.
+
+	The MAX_WORDS_TO_REQUEST attribute specifies the maximum number of
+	'per-word' spelling corrections to request from the spelling engine
+	for each term in the search query.  Its default value is 10.
+
+	MAX_WORDS_TO_USE specifies the maximum number of highest-scored
+	per-word spelling suggestions to use from among the available
+	suggestions in the spelling engine.  The default value is 10.
+
+	The CROSS_FIELD attribute specifies that cross-property suggestions
+	should be allowed and that they should be counted as matches when
+	evaluating the frequencies of suggestions.  Normally, suggestions
+	must match results in a single property or dimension value.
+
+-->
+<!ELEMENT SEARCH_CORRECTION_PARAMETERS EMPTY>
+<!ATTLIST SEARCH_CORRECTION_PARAMETERS
+	HITS_THRESHOLD			CDATA			#IMPLIED
+	HITS_GAIN_THRESHOLD		CDATA			#IMPLIED
+	SPELLING_SCORE_THRESHOLD	CDATA			#IMPLIED
+	MAX_SUGGESTIONS_RETURNED	CDATA			#IMPLIED
+	MAX_WORDS_TO_REQUEST		CDATA			#IMPLIED
+	MAX_WORDS_TO_USE		CDATA			#IMPLIED
+	WORD_BREAK_ANALYSIS		(TRUE | FALSE)		#IMPLIED
+	CROSS_FIELD			(TRUE | FALSE)		#IMPLIED
+>
+
+<!ELEMENT DID_YOU_MEAN (SEARCH_CORRECTION_PARAMETERS)>
+
+<!ELEMENT AUTO_SUGGEST (SEARCH_CORRECTION_PARAMETERS)>

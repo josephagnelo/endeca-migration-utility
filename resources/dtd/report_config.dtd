@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT REPORT_CONFIG EMPTY>
+
+<!ATTLIST REPORT_CONFIG
+    RUN_DAILY_REPORTS         (TRUE | FALSE)      "FALSE"
+    RUN_WEEKLY_REPORTS        (TRUE | FALSE)      "FALSE"
+    FIRST_DAY_OF_WEEK         CDATA           #REQUIRED
+    RG_MEMORY_SETTING         CDATA           #REQUIRED
+>

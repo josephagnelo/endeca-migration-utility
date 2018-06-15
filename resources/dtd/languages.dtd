@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Endeca 2008. All Rights Reserved.
+
+No entity shall modify, change, or add to the contents of this file without the
+express prior written consent of Endeca, otherwise all warranties are void.
+
+-->
+
+<!ENTITY % common.dtd SYSTEM "common.dtd">
+%common.dtd;
+
+<!ELEMENT LANGUAGES  (COMMENT?, KEY_LANGUAGE*)>
+
+<!--
+	The KEY_LANGUAGE element specifies what language should be assumed
+	for values of a particular dimension or property.  For example,
+
+	<KEY_LANGUAGE NAME="Title_english" LANGUAGE="en"/>
+	<KEY_LANGUAGE NAME="Title_spanish" LANGUAGE="es"/>
+
+	means that the "Title_english" dimension or property should be
+	assumed to have values that are in English, while the "Title_spanish"
+	dimension or property has values in Spanish.
+
+	For more information on internationalization, refer to Endeca
+	Documentation.
+-->
+<!ELEMENT KEY_LANGUAGE EMPTY>
+<!ATTLIST KEY_LANGUAGE
+	NAME		CDATA	#REQUIRED
+	LANGUAGE	CDATA	#REQUIRED
+>
